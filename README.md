@@ -1,4 +1,3 @@
-Aquí tienes una versión refinada del **README.md** adaptada al nombre de tu proyecto **SmartHealthyPostureDetector** y la estructura de archivos proporcionada:
 
 ---
 
@@ -181,5 +180,3 @@ Este proyecto está licenciado bajo la **MIT License**. Consulta el archivo `LIC
 Con **SmartHealthyPostureDetector**, puedes capturar, entrenar y probar modelos para detectar posturas corporales de manera inteligente y precisa. La herramienta permite adaptar el sistema a distintos escenarios, desde ergonomía hasta corrección postural en tiempo real.
 
 ---
-
-Ahora el **README.md** está completamente alineado con la estructura y los scripts de tu proyecto.
