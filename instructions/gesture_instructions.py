@@ -1,6 +1,7 @@
 import time
 import math
 import cv2 as cv
+import requests
 
 class Instructions():
 
@@ -15,6 +16,10 @@ class Instructions():
         self.forward_backward_threshold = 25
         self.takeoff = False
         self.previous_move = (0,0,0,0)
+        self.telegram_token = "7433957524:AAHoNUl7difExUQOsGla2-mR7XI9DZm7rSo"  # Token del bot de Telegram
+        self.chat_id = 6944816179  # ID del chat al que enviar mensajes
+
+    
 
     def get_follow_state(self):
         return self.follow_behaviour
@@ -223,3 +228,23 @@ class Instructions():
         if pose is None:
             return (0,0,0,self.speed)
         return (0,0,0,0)
+
+    def send_telegram_message(self, message):
+        """Envía un mensaje al chat de Telegram."""
+        # Definir la URL de la API de Telegram
+        url = f"https://api.telegram.org/bot{self.telegram_token}/sendMessage"
+        
+        # Crear el cuerpo del mensaje
+        data = {
+            "chat_id": self.chat_id,
+            "text": message
+        }
+
+        # Hacer la petición HTTP POST para enviar el mensaje
+        response = requests.post(url, data=data)
+
+        # Verificar si el mensaje se envió correctamente
+        if response.status_code == 200:
+            print(f"Mensaje enviado: {message}")
+        else:
+            print(f"Error al enviar mensaje: {response.status_code} - {response.text}")

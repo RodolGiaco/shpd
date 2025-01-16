@@ -59,11 +59,12 @@ def main():
 
         # Reconocimiento de gestos
         gesture_id, _ = pose_recognizer.recognize_pose(pose_result, frame)
-        gesture_name = pose_recognizer.translate_gesture_id_to_name(gesture_id)
+        gesture_name = pose_recognizer.translate_gesture_id_to_name(buffer.get_gesture())
         buffer.add_gesture(gesture_id)
         gesture = buffer.get_gesture()
-
         type_move, move = instructions.calculate_move(gesture, pose_result, frame)
+        
+        #instructions.send_telegram_message(gesture)
 
         tp_gui.update_camera_window(main_window_image)
         tp_gui.update_info_window(instructions.get_follow_state(), move, 100, gesture_name)
@@ -72,7 +73,7 @@ def main():
         # Mover ventanas para que no se encimen
         cv.moveWindow("ThirdPerson", 0, 0)  # Ventana principal en la esquina superior izquierda
         cv.moveWindow("Info", 640, 0)       # Ventana de información a la derecha de la principal
-        #cv.moveWindow("hand", 640, 360)     # Ventana de mano debajo de la ventana de información
+        cv.moveWindow("hand", 640, 360)     # Ventana de mano debajo de la ventana de información
 
         key = tp_gui.getKey()
         if key == ord('q'):

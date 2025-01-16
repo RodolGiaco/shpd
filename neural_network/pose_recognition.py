@@ -3,11 +3,18 @@ import copy
 import itertools
 import tensorflow as tf
 import numpy as np
+import json
+from instructions import gesture_buffer
 
 class PoseRecognizer(object):
     def __init__(self, model_path='model/keypoint_classifier.tflite', label_path='model/keypoint_classifier_label.csv'):
         self.keypoint_classifier, self.keypoint_classifier_labels = self.load_model(model_path=model_path, label_path=label_path)
-    
+              # Inicializar el buffer de gestos con 20 frames y un umbral del 80%
+    # Inicialización del buffer de gestos
+    with open('config_pose.json', 'r') as config_file:
+        config = json.load(config_file)
+    buffer = gesture_buffer.GestureBuffer(buffer_len=config['constants']['buffer_length'])
+        
     def recognize_pose(self, results, debug_image):
         gesture = -1
 
@@ -16,18 +23,33 @@ class PoseRecognizer(object):
             return gesture, self.keypoint_classifier_labels
 
         # for pose_landmarks in results.multi_pose_landmarks:
+       
+        # Procesar landmarks si son válidos
         for pose_landmarks in results.pose_landmarks:
             landmark_list = self.calc_landmark_list(debug_image, pose_landmarks)
             pre_processed_landmark_list = self.pre_process_landmark(landmark_list)
+
+            # Obtener el ID del gesto
             pose_sign_id = self.keypoint_classifier(pre_processed_landmark_list)
-            gesture = pose_sign_id
+
+            # Agregar al buffer para validar consistencia
+            self.buffer.add_gesture(pose_sign_id)
+
+            # Obtener el gesto consistente (si lo hay)
+            gesture = self.buffer.get_gesture()
 
         return gesture, self.keypoint_classifier_labels
     
     
     def translate_gesture_id_to_name(self, gesture_id):
-        if gesture_id == -1:
-            return 'No gesture'
+        """Traduce el ID del gesto a su nombre."""
+        if gesture_id is None or gesture_id == -1:
+            return 'No gesture'  # Manejar gestos no válidos o sin detectar
+
+        # Asegurar que el ID esté dentro del rango válido
+        if gesture_id >= len(self.keypoint_classifier_labels):
+            return 'Unknown gesture'
+
         return self.keypoint_classifier_labels[gesture_id]
     
     def calc_landmark_list(self, image, landmarks):

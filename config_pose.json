@@ -11,7 +11,7 @@
 
     "constants": {
         "pose": {
-            "min_pose_detection_confidence": 0.4,
+            "min_pose_detection_confidence": 0.6,
             "min_pose_presence_confidence": 0.3,
             "min_tracking_confidence": 0.3,
             "safe_zone": true
@@ -21,7 +21,7 @@
             "hand_window_height": 300,
             "show_battery": false
         },
-        "buffer_length": 13,
+        "buffer_length": 6,
         "speed": 40,
         "webcam_number": 0
     },
