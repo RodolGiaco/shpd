@@ -3,7 +3,7 @@ import numpy as np
 import json
 from mp_utils import pose_posture
 from neural_network import pose_recognition
-from instructions import gesture_instructions  
+from instructions import gesture_instructions
 from instructions import gesture_buffer
 from gui import ThirdPersonGUI  # Importa la clase ThirdPersonGUI desde gui
 
@@ -23,9 +23,8 @@ def main():
         print("Error: No se pudo abrir la cámara")
         return
 
-     # Inicialización del detector de pose (torso)
+    # Inicialización del detector de pose (torso)
     pose_detection = pose_posture.PoseDetection(
-        pose_model_asset_path=config['model_paths']['pose_landmarker'],
         min_pose_detection_confidence=config['constants']['pose']['min_pose_detection_confidence'],
         min_pose_presence_confidence=pose_presence_confidence,
         min_pose_tracking_confidence=pose_tracking_confidence
@@ -62,12 +61,12 @@ def main():
         gesture_name = pose_recognizer.translate_gesture_id_to_name(buffer.get_gesture())
         buffer.add_gesture(gesture_id)
         gesture = buffer.get_gesture()
-        type_move, move = instructions.calculate_move(gesture, pose_result, frame)
+        # type_move, move = instructions.calculate_move(gesture, pose_result, frame)
         
         #instructions.send_telegram_message(gesture)
 
         tp_gui.update_camera_window(main_window_image)
-        tp_gui.update_info_window(instructions.get_follow_state(), move, 100, gesture_name)
+        # tp_gui.update_info_window(instructions.get_follow_state(), move, 100, gesture_name)
         tp_gui.show_window()
 
         # Mover ventanas para que no se encimen

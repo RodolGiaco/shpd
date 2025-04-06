@@ -1,6 +1,5 @@
 {
     "model_paths": {
-        "pose_landmarker": "model/pose_landmarker_full.task",
         "pose_recogniser": "model/keypoint_classifier.tflite",
         "keypoint_classifier_labels": "model/keypoint_classifier_label.csv"
     },

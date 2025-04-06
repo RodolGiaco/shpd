@@ -1,5 +1,17 @@
-numpy == 1.26.4
-mediapipe == 0.10.13
-opencv-python == 4.8.1.78
-djitellopy == 2.5.0
-tensorflow == 2.17.0
+# OpenCV versión probada y verificada
+opencv-python==4.5.5.64
+
+# MediaPipe estable para ARMv7 (usando soluciones clásicas)
+mediapipe==0.8.8
+
+# Numpy, requerido por MediaPipe y OpenCV
+numpy==1.22.0
+
+# TensorFlow Lite runtime específico para ARMv7 (NO usar tensorflow normal)
+# No lo instales desde pip, se instala manualmente con .whl:
+# pip install https://github.com/google-coral/pycoral/releases/download/release-frogfish/tflite_runtime-2.5.0-cp37-cp37m-linux_armv7l.whl
+# Por eso, solo lo dejamos como comentario aquí:
+# tflite-runtime==2.5.0 (manual .whl)
+
+# CSV y utilitarios (incluidos por defecto en Python)
+

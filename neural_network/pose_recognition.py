@@ -1,7 +1,7 @@
 import csv
 import copy
 import itertools
-import tensorflow as tf
+from tflite_runtime.interpreter import Interpreter
 import numpy as np
 import json
 from instructions import gesture_buffer
@@ -114,7 +114,7 @@ class PoseRecognizer(object):
 
 class KeyPointClassifier(object):
     def __init__(self, model_path, num_threads=1):
-        self.interpreter = tf.lite.Interpreter(model_path=model_path, num_threads=num_threads)
+        self.interpreter = Interpreter(model_path=model_path, num_threads=num_threads)
         self.interpreter.allocate_tensors()
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
