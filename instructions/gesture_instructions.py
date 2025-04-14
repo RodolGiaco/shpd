@@ -18,6 +18,9 @@ class Instructions():
         self.previous_move = (0,0,0,0)
         self.telegram_token = "7433957524:AAHoNUl7difExUQOsGla2-mR7XI9DZm7rSo"  # Token del bot de Telegram
         self.chat_id = 6944816179  # ID del chat al que enviar mensajes
+    
+    def get_follow_state(self):
+        return self.follow_behaviour
 
     def send_telegram_message(self, message):
         """Envía un mensaje al chat de Telegram."""

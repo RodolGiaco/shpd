@@ -5,7 +5,7 @@ from collections import deque, Counter
 from collections import deque, Counter
 
 class GestureBuffer:
-    def __init__(self, buffer_len=20, min_consistency=0.8):
+    def __init__(self, buffer_len=2, min_consistency=0.2):
         self.buffer_len = buffer_len
         self.min_consistency = min_consistency
         self._buffer = deque(maxlen=buffer_len)

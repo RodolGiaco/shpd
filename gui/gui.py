@@ -16,10 +16,8 @@ class ThirdPersonGUI():
         cv.destroyAllWindows()
 
     def show_window(self):
-        if self.camera_window is not None:
-            cv.imshow("ThirdPerson", self.camera_window)
-        if self.info_window is not None:
-            cv.imshow("Info", self.info_window)
+        cv.imshow("ThirdPerson", self.camera_window)
+        cv.imshow("Info", self.info_window)
    	 # if self.hand_window is not None:
    	 #     cv.imshow("hand", self.hand_window)
         self.key = cv.waitKey(1)

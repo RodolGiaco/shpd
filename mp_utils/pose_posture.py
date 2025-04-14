@@ -1,9 +1,10 @@
 from mp_utils import mp_pose
 
-class PoseDetection:
+class PoseDetectionPosture:
     def __init__(self,
+                 static_image_mode=False,
+                 model_complexity=1,
                  min_pose_detection_confidence=0.3,
-                 min_pose_presence_confidence=0.3,
                  min_pose_tracking_confidence=0.3):
         self.pose = mp_pose.PoseDetection(
             min_detection_confidence=min_pose_detection_confidence,

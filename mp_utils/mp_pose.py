@@ -6,9 +6,12 @@ class PoseDetection:
     def __init__(self,
                  static_image_mode=False,
                  model_complexity=1,
-                 enable_segmentation=False,
+                 enable_segmentation=True,
                  min_detection_confidence=0.3,
                  min_tracking_confidence=0.3):
+
+        self.enable_segmentation = enable_segmentation
+
         self.mp_pose = mp.solutions.pose
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_styles = mp.solutions.drawing_styles
@@ -24,24 +27,13 @@ class PoseDetection:
 
     def close(self):
         self.pose.close()
-
     def extract_pose(self, image):
         if image is None:
             return None
 
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         self.results = self.pose.process(image_rgb)
-
-        keypoints = []
-        if self.results.pose_landmarks:
-            for landmark in self.results.pose_landmarks.landmark:
-                keypoints.append([
-                    landmark.x,
-                    landmark.y,
-                    landmark.z,
-                    landmark.visibility
-                ])
-        return keypoints
+        return self.results
 
     def draw_pose(self, image):
         if self.results is None or not self.results.pose_landmarks:

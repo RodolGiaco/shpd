@@ -19,28 +19,25 @@ class PoseRecognizer(object):
         gesture = -1
 
         # if results is None or debug_image is None or results.multi_pose_landmarks is None:
-        if results is None or debug_image is None or results is None or not hasattr(results, 'pose_landmarks'):
+    
+        if results is None or debug_image is None or results.pose_landmarks is None:
             return gesture, self.keypoint_classifier_labels
 
-        # for pose_landmarks in results.multi_pose_landmarks:
-       
-        # Procesar landmarks si son válidos
-        for pose_landmarks in results.pose_landmarks:
-            landmark_list = self.calc_landmark_list(debug_image, pose_landmarks)
-            pre_processed_landmark_list = self.pre_process_landmark(landmark_list)
+        pose_landmarks = results.pose_landmarks
+        landmark_list = self.calc_landmark_list(debug_image, pose_landmarks.landmark)
+        pre_processed_landmark_list = self.pre_process_landmark(landmark_list)
 
-            # Obtener el ID del gesto
-            pose_sign_id = self.keypoint_classifier(pre_processed_landmark_list)
+        # Obtener el ID del gesto
+        pose_sign_id = self.keypoint_classifier(pre_processed_landmark_list)
 
-            # Agregar al buffer para validar consistencia
-            self.buffer.add_gesture(pose_sign_id)
+        # Agregar al buffer para validar consistencia
+        self.buffer.add_gesture(pose_sign_id)
 
-            # Obtener el gesto consistente (si lo hay)
-            gesture = self.buffer.get_gesture()
+        # Obtener el gesto consistente (si lo hay)
+        gesture = self.buffer.get_gesture()
 
         return gesture, self.keypoint_classifier_labels
-    
-    
+
     def translate_gesture_id_to_name(self, gesture_id):
         """Traduce el ID del gesto a su nombre."""
         if gesture_id is None or gesture_id == -1:
