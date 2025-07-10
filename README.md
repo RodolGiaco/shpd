@@ -139,12 +139,23 @@ For comprehensive documentation in English, please refer to:
 - **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)** - Architecture overview and guide for extending the system
 - **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Quick reference guide with common code snippets
 
+### **Raspberry Pi Documentation / Documentación para Raspberry Pi**
+
+- **[RASPBERRY_PI_QUICKSTART.md](RASPBERRY_PI_QUICKSTART.md)** - Guía de inicio rápido para Raspberry Pi 3
+- **[RASPBERRY_PI_INSTALLATION.md](RASPBERRY_PI_INSTALLATION.md)** - Guía completa de instalación para Raspberry Pi 3 Model B Plus
+- **[MEDIAPIPE_ARM_COMPILATION.md](MEDIAPIPE_ARM_COMPILATION.md)** - Guía detallada para compilar MediaPipe en ARM
+- **[install_rpi.sh](install_rpi.sh)** - Script automatizado de instalación
+- **[main_rpi.py](main_rpi.py)** - Versión optimizada de main.py para Raspberry Pi
+
 These documents include:
 - Detailed API documentation for all public functions and classes
 - Code examples and usage patterns
 - Performance tuning guidelines
 - Testing and debugging instructions
 - Extension and customization guides
+- Step-by-step installation guide for Raspberry Pi
+- MediaPipe compilation from source for ARM architecture
+- Performance optimizations for limited hardware
 
 ---
 
