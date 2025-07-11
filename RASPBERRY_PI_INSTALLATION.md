@@ -1,118 +1,172 @@
-# Guía de Instalación para Raspberry Pi 3 Model B Plus
+# Guía Completa de Instalación para Raspberry Pi 3 Model B Plus
 
-## Especificaciones del Sistema
+## Especificaciones Técnicas del Sistema
+
+### Características del Hardware Objetivo
 - **Modelo**: Raspberry Pi 3 Model B Plus Rev 1.3
-- **Arquitectura**: ARMv7 32-bit
-- **CPU**: 4 núcleos @ 1.4GHz
-- **RAM**: ~872 MB
-- **Conectividad**: USB 2.0, Ethernet LAN78xx, Wi-Fi brcmfmac
+- **Arquitectura de Procesador**: ARMv7 32-bit
+- **Unidad Central de Procesamiento**: Quad-core ARM Cortex-A53 @ 1.4GHz
+- **Memoria RAM**: 1GB LPDDR2 (~872 MB disponibles para el usuario)
+- **Conectividad**: USB 2.0, Ethernet LAN78xx, Wi-Fi 802.11n brcmfmac
 
-## Tabla de Contenidos
-1. [Preparación del Sistema](#preparación-del-sistema)
+## Índice de Contenidos
+1. [Metodología de Preparación del Sistema](#metodología-de-preparación-del-sistema)
 2. [Instalación de Dependencias Base](#instalación-de-dependencias-base)
 3. [Compilación de OpenCV 4.5.5.64](#compilación-de-opencv-4.5.5.64)
 4. [Compilación de MediaPipe 0.8.8](#compilación-de-mediapipe-0.8.8)
 5. [Instalación de TensorFlow Lite](#instalación-de-tensorflow-lite)
 6. [Configuración del Proyecto](#configuración-del-proyecto)
-7. [Optimizaciones para Raspberry Pi](#optimizaciones-para-raspberry-pi)
-8. [Solución de Problemas](#solución-de-problemas)
+7. [Optimizaciones Específicas para Raspberry Pi](#optimizaciones-específicas-para-raspberry-pi)
+8. [Diagnóstico y Resolución de Problemas](#diagnóstico-y-resolución-de-problemas)
 
-## Preparación del Sistema
+## Metodología de Preparación del Sistema
 
-### 1. Actualizar el Sistema Operativo
+### Fase 1: Actualización del Sistema Operativo
+
 ```bash
+# Actualización de repositorios y paquetes del sistema
 sudo apt update
 sudo apt upgrade -y
 sudo apt dist-upgrade -y
+
+# Actualización del firmware del sistema
 sudo rpi-update
 ```
 
-### 2. Expandir el Sistema de Archivos
+**Justificación**: La actualización completa del sistema asegura compatibilidad con las últimas optimizaciones del kernel y drivers específicos para el hardware Raspberry Pi.
+
+### Fase 2: Expansión del Sistema de Archivos
+
 ```bash
+# Configuración mediante raspi-config
 sudo raspi-config
-# Seleccionar: Advanced Options → Expand Filesystem
+# Navegación: Advanced Options → Expand Filesystem
+
+# Reinicio requerido para aplicar cambios
 sudo reboot
 ```
 
-### 3. Aumentar el Swap (Necesario para compilación)
+### Fase 3: Configuración del Espacio de Intercambio Virtual
+
 ```bash
-# Detener el swap actual
+# Detención del servicio de swap actual
 sudo dphys-swapfile swapoff
 
-# Modificar el tamaño del swap
+# Modificación de la configuración de swap
 sudo nano /etc/dphys-swapfile
-# Cambiar CONF_SWAPSIZE=100 a CONF_SWAPSIZE=2048
+# Parámetro a modificar: CONF_SWAPSIZE=100 → CONF_SWAPSIZE=2048
 
-# Reiniciar el swap
+# Aplicación de la nueva configuración
 sudo dphys-swapfile setup
 sudo dphys-swapfile swapon
 ```
 
-### 4. Configurar GPU Split
+**Fundamentación Técnica**: El incremento del espacio de intercambio de 100MB a 2GB es crítico para el proceso de compilación de MediaPipe, que requiere significativamente más memoria de la disponible físicamente en el dispositivo.
+
+### Fase 4: Optimización de Asignación de Memoria GPU
+
 ```bash
 sudo raspi-config
-# Seleccionar: Advanced Options → Memory Split
-# Establecer a 128 MB para GPU
+# Ruta de configuración: Advanced Options → Memory Split
+# Asignación recomendada: 128 MB para GPU
 ```
 
 ## Instalación de Dependencias Base
 
-### 1. Herramientas de Compilación
+### Conjunto 1: Herramientas de Desarrollo y Compilación
+
 ```bash
+# Toolchain de compilación esencial
 sudo apt install -y build-essential cmake git pkg-config
 sudo apt install -y gcc g++ make automake
+
+# Herramientas de desarrollo Python
 sudo apt install -y python3-dev python3-pip python3-venv
+
+# Utilidades de red y descarga
 sudo apt install -y wget unzip curl
 ```
 
-### 2. Bibliotecas de Sistema
+### Conjunto 2: Bibliotecas de Soporte para OpenCV
+
 ```bash
-# Bibliotecas para OpenCV
+# Bibliotecas de procesamiento de imágenes
 sudo apt install -y libjpeg-dev libtiff5-dev libjasper-dev libpng-dev
+
+# Bibliotecas de procesamiento de video
 sudo apt install -y libavcodec-dev libavformat-dev libswscale-dev libv4l-dev
 sudo apt install -y libxvidcore-dev libx264-dev
+
+# Bibliotecas de fuentes y renderizado
 sudo apt install -y libfontconfig1-dev libcairo2-dev
 sudo apt install -y libgdk-pixbuf2.0-dev libpango1.0-dev
+
+# Bibliotecas de interfaz gráfica
 sudo apt install -y libgtk2.0-dev libgtk-3-dev
+
+# Bibliotecas de álgebra lineal optimizada
 sudo apt install -y libatlas-base-dev gfortran
+
+# Bibliotecas de manejo de datos científicos
 sudo apt install -y libhdf5-dev libhdf5-serial-dev libhdf5-103
 sudo apt install -y libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5
 
-# Bibliotecas adicionales
+# Bibliotecas adicionales especializadas
 sudo apt install -y libilmbase-dev libopenexr-dev libgstreamer1.0-dev
 sudo apt install -y libwebp-dev libopenblas-dev liblapack-dev
 sudo apt install -y libprotobuf-dev protobuf-compiler
 ```
 
-### 3. Crear Entorno Virtual
+### Conjunto 3: Creación de Entorno Virtual de Python
+
 ```bash
+# Navegación al directorio home del usuario
 cd ~
+
+# Creación de entorno virtual aislado
 python3 -m venv pose_env
+
+# Activación del entorno virtual
 source pose_env/bin/activate
 
-# Actualizar pip
+# Actualización de herramientas de gestión de paquetes
 pip install --upgrade pip setuptools wheel
 ```
 
+**Ventajas del Entorno Virtual**: Aislamiento de dependencias, prevención de conflictos entre versiones de bibliotecas, y facilidad de replicación del entorno de desarrollo.
+
 ## Compilación de OpenCV 4.5.5.64
 
-### 1. Descargar OpenCV
+### Fase 1: Descarga de Código Fuente
+
 ```bash
+# Navegación al directorio de trabajo
 cd ~
+
+# Descarga de OpenCV principal y módulos contrib
 wget -O opencv.zip https://github.com/opencv/opencv/archive/4.5.5.zip
 wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/4.5.5.zip
+
+# Extracción de archivos comprimidos
 unzip opencv.zip
 unzip opencv_contrib.zip
+
+# Renombrado de directorios para simplicidad
 mv opencv-4.5.5 opencv
 mv opencv_contrib-4.5.5 opencv_contrib
 ```
 
-### 2. Configurar la Compilación
+### Fase 2: Configuración de Parámetros de Compilación
+
 ```bash
+# Navegación al directorio de OpenCV
 cd ~/opencv
+
+# Creación del directorio de compilación
 mkdir build
 cd build
 
+# Configuración mediante CMake con optimizaciones específicas
 cmake -D CMAKE_BUILD_TYPE=RELEASE \
     -D CMAKE_INSTALL_PREFIX=/usr/local \
     -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
@@ -132,48 +186,70 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
     ..
 ```
 
-### 3. Compilar OpenCV (Esto tomará 2-3 horas)
+**Análisis de Parámetros de Compilación**:
+- `ENABLE_NEON=ON`: Activación de instrucciones SIMD para aceleración vectorial
+- `ENABLE_VFPV3=ON`: Habilitación de unidad de punto flotante optimizada
+- `CMAKE_SHARED_LINKER_FLAGS=-latomic`: Solución para operaciones atómicas en ARM
+
+### Fase 3: Proceso de Compilación
+
 ```bash
-# Usar solo 2 cores para evitar problemas de memoria
+# Compilación con paralelización limitada (prevención de agotamiento de memoria)
 make -j2
 
-# Si falla por memoria, usar:
-make -j1
+# Alternativa en caso de problemas de memoria
+# make -j1
 
-# Instalar
+# Instalación del software compilado
 sudo make install
 sudo ldconfig
 ```
 
-### 4. Verificar Instalación
+**Tiempo Estimado**: 2-3 horas dependiendo de la configuración del sistema y velocidad de la tarjeta SD.
+
+### Fase 4: Verificación de la Instalación
+
 ```bash
+# Activación del entorno virtual
 source ~/pose_env/bin/activate
+
+# Verificación de la versión instalada
 python -c "import cv2; print(cv2.__version__)"
-# Debería mostrar: 4.5.5
+# Salida esperada: 4.5.5
 ```
 
 ## Compilación de MediaPipe 0.8.8
 
-### 1. Instalar Bazel
+### Fase 1: Instalación de Bazel (Sistema de Construcción)
+
 ```bash
-# MediaPipe 0.8.8 requiere Bazel 3.7.2
+# Descarga de Bazel compatible con MediaPipe 0.8.8
 cd ~
 wget https://github.com/bazelbuild/bazel/releases/download/3.7.2/bazel-3.7.2-linux-arm64
+
+# Configuración de permisos y ubicación
 chmod +x bazel-3.7.2-linux-arm64
 sudo mv bazel-3.7.2-linux-arm64 /usr/local/bin/bazel
 ```
 
-### 2. Clonar MediaPipe
+**Nota de Compatibilidad**: Bazel 3.7.2 es la última versión oficialmente compatible con MediaPipe 0.8.8 en arquitecturas ARM.
+
+### Fase 2: Descarga y Configuración de MediaPipe
+
 ```bash
+# Clonación del repositorio MediaPipe
 cd ~
 git clone https://github.com/google/mediapipe.git
 cd mediapipe
+
+# Checkout a la versión específica requerida
 git checkout v0.8.8
 ```
 
-### 3. Configurar para ARM
+### Fase 3: Configuración Específica para Arquitectura ARM
+
 ```bash
-# Crear archivo de configuración para ARM
+# Creación de archivo de configuración para ARM
 cat > .bazelrc.user << EOF
 build --crosstool_top=//external:android/crosstool
 build --cpu=armeabi-v7a
@@ -191,61 +267,89 @@ build --linkopt=-latomic
 EOF
 ```
 
-### 4. Compilar MediaPipe Python
+**Explicación de Parámetros**:
+- `MEDIAPIPE_DISABLE_GPU=1`: Deshabilitación de procesamiento GPU (no compatible con RPi)
+- `-march=armv7-a`: Optimización específica para arquitectura ARMv7
+- `-mfpu=neon-vfpv4`: Utilización de unidad de procesamiento vectorial NEON
+
+### Fase 4: Compilación de MediaPipe Python
+
 ```bash
-# Instalar dependencias Python
+# Activación del entorno virtual
 source ~/pose_env/bin/activate
+
+# Instalación de dependencias Python específicas
 pip install numpy==1.19.5
 pip install attrs>=19.1.0
 pip install absl-py
 pip install matplotlib
 pip install opencv-contrib-python==4.5.5.64
 
-# Compilar wheel de MediaPipe
-cd ~/mediapipe
+# Generación de archivos Protocol Buffers
 python setup.py gen_protos
+
+# Compilación del wheel de distribución
 python setup.py bdist_wheel
 ```
 
-### 5. Instalar MediaPipe
+### Fase 5: Instalación de MediaPipe
+
 ```bash
-# El archivo .whl estará en dist/
+# Instalación del wheel generado
 pip install dist/mediapipe-0.8.8-cp39-cp39-linux_armv7l.whl
 ```
 
 ## Instalación de TensorFlow Lite
 
-### 1. Instalar TFLite Runtime para ARM
+### Metodología de Instalación para ARMv7
+
 ```bash
+# Activación del entorno virtual
 source ~/pose_env/bin/activate
 
-# Para ARMv7 32-bit
+# Instalación mediante wheel precompilado oficial
 pip install https://github.com/google-coral/pycoral/releases/download/v2.0.0/tflite_runtime-2.5.0.post1-cp39-cp39-linux_armv7l.whl
+```
 
-# Si falla, compilar desde fuente:
+### Procedimiento Alternativo: Compilación desde Código Fuente
+
+```bash
+# En caso de fallo de la instalación precompilada
 cd ~
 git clone https://github.com/tensorflow/tensorflow.git
 cd tensorflow
 git checkout v2.5.0
+
+# Compilación específica para ARM
 ./tensorflow/lite/tools/pip_package/build_pip_package_with_cmake.sh
+
+# Instalación del wheel generado
 pip install tensorflow/lite/tools/pip_package/gen/tflite_pip/python3/dist/tflite_runtime-2.5.0-cp39-cp39-linux_armv7l.whl
 ```
 
 ## Configuración del Proyecto
 
-### 1. Clonar el Repositorio
+### Fase 1: Descarga del Repositorio del Proyecto
+
 ```bash
+# Navegación al directorio home
 cd ~
+
+# Clonación del repositorio principal
 git clone [URL_DEL_REPOSITORIO] SmartHealthyPostureDetector
 cd SmartHealthyPostureDetector
 ```
 
-### 2. Instalar Dependencias Restantes
+### Fase 2: Instalación de Dependencias Adicionales
+
 ```bash
+# Activación del entorno virtual
 source ~/pose_env/bin/activate
+
+# Instalación de bibliotecas de comunicación
 pip install requests
 
-# Crear requirements específico para Raspberry Pi
+# Creación de archivo de requisitos específico para Raspberry Pi
 cat > requirements_rpi.txt << EOF
 opencv-python==4.5.5.64
 mediapipe==0.8.8
@@ -254,12 +358,14 @@ tflite-runtime==2.5.0
 requests>=2.25.0
 EOF
 
+# Instalación de todas las dependencias
 pip install -r requirements_rpi.txt
 ```
 
-### 3. Optimizar Configuración para Raspberry Pi
+### Fase 3: Configuración Optimizada para Raspberry Pi
+
 ```bash
-# Crear configuración optimizada
+# Creación de archivo de configuración específico
 cat > config_pose_rpi.json << EOF
 {
   "constants": {
@@ -294,13 +400,14 @@ cat > config_pose_rpi.json << EOF
 EOF
 ```
 
-### 4. Modificar main.py para Raspberry Pi
+### Fase 4: Adaptaciones del Código Principal
+
 ```python
-# Agregar al inicio de main.py
+# Modificaciones recomendadas para main.py
 import os
 os.environ['OPENCV_VIDEOIO_PRIORITY_MSMF'] = '0'
 
-# Modificar la inicialización de la cámara
+# Configuración optimizada de captura de video
 cap = cv.VideoCapture(0, cv.CAP_V4L2)
 cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
@@ -308,24 +415,26 @@ cap.set(cv.CAP_PROP_FPS, 15)
 cap.set(cv.CAP_PROP_BUFFERSIZE, 1)
 ```
 
-## Optimizaciones para Raspberry Pi
+## Optimizaciones Específicas para Raspberry Pi
 
-### 1. Optimización de MediaPipe
+### Optimización 1: Configuración de MediaPipe
+
 ```python
-# En mp_utils/mp_pose.py, modificar __init__:
+# Modificación en mp_utils/mp_pose.py
 def __init__(self,
              static_image_mode=False,
-             model_complexity=0,  # Cambiar a 0 para modelo lite
-             enable_segmentation=False,  # Deshabilitar segmentación
+             model_complexity=0,  # Modelo lite obligatorio
+             enable_segmentation=False,  # Deshabilitación de segmentación
              min_detection_confidence=0.3,
              min_tracking_confidence=0.3):
 ```
 
-### 2. Frame Skipping
+### Optimización 2: Implementación de Salto de Frames
+
 ```python
-# Agregar a main.py
+# Incorporación en main.py
 frame_counter = 0
-FRAME_SKIP = 2  # Procesar cada 2 frames
+FRAME_SKIP = 2  # Procesamiento cada 2 frames
 
 while True:
     ret, frame = cap.read()
@@ -336,28 +445,33 @@ while True:
     if frame_counter % FRAME_SKIP != 0:
         continue
     
-    # Procesar frame...
+    # Lógica de procesamiento de frames...
 ```
 
-### 3. Reducir Resolución de Procesamiento
+### Optimización 3: Reducción de Resolución de Procesamiento
+
 ```python
-# En main.py, después de capturar el frame
-frame = cv.resize(frame, (320, 240))  # Procesar a menor resolución
-# ... procesamiento ...
-display_frame = cv.resize(annotated_frame, (640, 480))  # Mostrar a resolución mayor
+# Implementación en bucle principal
+# Reducción de resolución para procesamiento
+frame_process = cv.resize(frame, (320, 240))
+# ... procesamiento con frame_process ...
+# Escalado para visualización
+display_frame = cv.resize(annotated_frame, (640, 480))
 ```
 
-### 4. Deshabilitar GUI Innecesaria
+### Optimización 4: Eliminación de GUI No Esencial
+
 ```python
-# Modificar para mostrar solo ventana principal
-# Comentar en main.py:
+# Comentar o eliminar en main.py las siguientes líneas:
 # cv.imshow("Segmentación del cuerpo", colored_mask)
 ```
 
 ## Script de Inicio Automático
 
-### 1. Crear Script de Inicio
+### Creación de Script de Ejecución
+
 ```bash
+# Generación de script de inicio
 cat > ~/start_pose_detector.sh << EOF
 #!/bin/bash
 cd ~/SmartHealthyPostureDetector
@@ -366,13 +480,17 @@ export DISPLAY=:0
 python main.py
 EOF
 
+# Asignación de permisos de ejecución
 chmod +x ~/start_pose_detector.sh
 ```
 
-### 2. Configurar Autostart
+### Configuración de Autostart del Sistema
+
 ```bash
-# Agregar al archivo de autostart
+# Creación del directorio de autostart
 mkdir -p ~/.config/autostart
+
+# Creación del archivo de configuración de autostart
 cat > ~/.config/autostart/pose_detector.desktop << EOF
 [Desktop Entry]
 Type=Application
@@ -384,90 +502,99 @@ X-GNOME-Autostart-enabled=true
 EOF
 ```
 
-## Solución de Problemas
+## Diagnóstico y Resolución de Problemas
 
-### 1. Error de Memoria
+### Problema 1: Errores de Memoria Durante Compilación
+
 ```bash
-# Si hay errores de memoria durante compilación
+# Detención temporal del servicio de swap
 sudo systemctl stop dphys-swapfile
 sudo systemctl disable dphys-swapfile
-# Reiniciar y volver a habilitar swap
+
+# Reinicio del sistema y rehabilitación
+# Reiniciar manualmente después del reinicio
 ```
 
-### 2. Error de Cámara
+### Problema 2: Errores de Detección de Cámara
+
 ```bash
-# Verificar cámara
+# Verificación del estado de la cámara
 vcgencmd get_camera
-# Debería mostrar: supported=1 detected=1
+# Salida esperada: supported=1 detected=1
 
-# Habilitar cámara
+# Habilitación mediante raspi-config
 sudo raspi-config
-# Interfacing Options → Camera → Enable
+# Ruta: Interfacing Options → Camera → Enable
 
-# Permisos de video
+# Configuración de permisos de grupo
 sudo usermod -a -G video $USER
 ```
 
-### 3. Error de ImportError con cv2
+### Problema 3: Errores de Importación de cv2
+
 ```bash
-# Verificar rutas
+# Configuración de rutas de Python
 export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.9/site-packages"
 echo 'export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.9/site-packages"' >> ~/.bashrc
 ```
 
-### 4. MediaPipe Performance Issues
+### Problema 4: Problemas de Rendimiento de MediaPipe
+
 ```python
-# Reducir complejidad en tiempo de ejecución
+# Configuración de parámetros conservadores
 pose_detection = pose_posture.PoseDetectionPosture(
     static_image_mode=False,
-    model_complexity=0,  # Lite model
-    min_pose_detection_confidence=0.5,  # Aumentar umbral
+    model_complexity=0,  # Modelo lite obligatorio
+    min_pose_detection_confidence=0.5,  # Incremento del umbral
     min_pose_tracking_confidence=0.5
 )
 ```
 
-### 5. Optimización de Energía
+### Problema 5: Optimización de Gestión de Energía
+
 ```bash
-# Configurar governor de CPU para performance
+# Configuración de governor de CPU para rendimiento
 echo performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 
-# Para ahorro de energía, usar:
+# Para modo de ahorro de energía:
 echo ondemand | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 ```
 
-## Testing y Verificación
+## Protocolo de Testing y Verificación
 
-### 1. Test de Componentes
+### Test 1: Verificación de Componentes del Sistema
+
 ```python
-# test_rpi_setup.py
+# Archivo: test_rpi_setup.py
 import cv2
 import mediapipe as mp
 import tflite_runtime.interpreter as tflite
 import numpy as np
 
-print(f"OpenCV version: {cv2.__version__}")
-print(f"MediaPipe version: {mp.__version__}")
-print("TFLite Runtime: OK")
+print(f"Versión OpenCV: {cv2.__version__}")
+print(f"Versión MediaPipe: {mp.__version__}")
+print("TensorFlow Lite Runtime: Operativo")
 
-# Test camera
+# Verificación de la cámara
 cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 if ret:
-    print("Camera: OK")
+    print("Cámara: Operativa")
 else:
-    print("Camera: FAILED")
+    print("Cámara: FALLO")
 cap.release()
 
-# Test MediaPipe
+# Verificación de MediaPipe
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(static_image_mode=False, model_complexity=0)
-print("MediaPipe Pose: OK")
+print("MediaPipe Pose: Operativo")
 pose.close()
 ```
 
-### 2. Benchmark de Performance
+### Test 2: Benchmark de Rendimiento
+
 ```python
-# benchmark_rpi.py
+# Archivo: benchmark_rpi.py
 import time
 import cv2
 from mp_utils.pose_posture import PoseDetectionPosture
@@ -485,17 +612,28 @@ while frame_count < 100:
         frame_count += 1
 
 end_time = time.time()
-fps = frame_count / (end_time - start_time)
-print(f"Average FPS: {fps:.2f}")
+fps_promedio = frame_count / (end_time - start_time)
+print(f"FPS Promedio: {fps_promedio:.2f}")
 
 cap.release()
 detector.close()
 ```
 
-## Notas Finales
+## Consideraciones Finales
 
-- La compilación completa puede tomar 4-6 horas
-- Se recomienda usar disipadores de calor durante la compilación
-- Para producción, considerar usar Raspberry Pi 4 con más RAM
-- El modelo lite de MediaPipe es suficiente para la mayoría de aplicaciones
-- Considerar usar cámara USB en lugar de CSI para mejor compatibilidad
+### Tiempo Total de Implementación
+- **Compilación completa**: 4-6 horas
+- **Configuración del sistema**: 30-60 minutos
+- **Testing y optimización**: 1-2 horas
+
+### Recomendaciones de Hardware Adicional
+- **Refrigeración**: Disipadores de calor durante compilación intensiva
+- **Almacenamiento**: Tarjeta SD Clase 10 U3 para mejor rendimiento I/O
+- **Alimentación**: Fuente de 5V/3A estable para operación continua
+
+### Consideraciones para Producción
+- Utilizar Raspberry Pi 4 con 4GB RAM para aplicaciones críticas
+- Implementar watchdog de sistema para reinicio automático
+- Configurar logging detallado para monitoreo de rendimiento
+
+Esta guía proporciona una metodología completa y sistemática para la implementación exitosa del sistema de detección de posturas en plataformas Raspberry Pi, optimizada para aplicaciones de investigación académica y desarrollo de prototipos.

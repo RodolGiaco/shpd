@@ -1,10 +1,10 @@
-# Developer Guide - Pose Recognition System
+# Guía del Desarrollador - Sistema de Reconocimiento de Posturas
 
-## Architecture Overview
+## Arquitectura del Sistema
 
 ```
 ┌─────────────────┐
-│   main.py       │ ← Entry point
+│   main.py       │ ← Punto de entrada
 └────────┬────────┘
          │
     ┌────┴─────────────────────────────┐
@@ -12,8 +12,8 @@
 ┌───▼────────┐  ┌──────────────┐  ┌───▼──────┐
 │ mp_utils   │  │neural_network│  │   gui    │
 │            │  │              │  │          │
-│-PoseDetect │  │-PoseRecogniz│  │-ThirdPers│
-│-PosePosture│  │-KeyPointClas│  │   onGUI  │
+│-PoseDetect │  │-PoseRecogniz │  │-ThirdPers│
+│-PosePosture│  │-KeyPointClas │  │   onGUI  │
 └────────────┘  └──────────────┘  └──────────┘
                         │
                  ┌──────▼─────┐
@@ -24,184 +24,184 @@
                  └────────────┘
 ```
 
-## System Flow
+## Flujo del Sistema
 
-1. **Frame Capture**: Camera captures video frames
-2. **Pose Detection**: MediaPipe extracts 33 pose landmarks
-3. **Landmark Filtering**: System filters to 12 key joints
-4. **Preprocessing**: Landmarks normalized and flattened
-5. **Classification**: TFLite model predicts gesture
-6. **Buffering**: Gesture buffer ensures stability
-7. **Display**: GUI shows results and status
+1. **Captura de Frames**: La cámara captura frames de video
+2. **Detección de Poses**: MediaPipe extrae 33 puntos clave de postura
+3. **Filtrado de Puntos Clave**: El sistema filtra a 12 articulaciones clave
+4. **Preprocesamiento**: Los puntos clave se normalizan y aplanan
+5. **Clasificación**: El modelo TFLite predice el gesto
+6. **Estabilización**: El buffer de gestos asegura estabilidad
+7. **Visualización**: La GUI muestra resultados y estado
 
-## Extending the System
+## Extensión del Sistema
 
-### Adding New Gestures
+### Añadiendo Nuevos Gestos
 
-#### Step 1: Data Collection
+#### Paso 1: Recolección de Datos
 ```python
-# Run the data collection script
+# Ejecutar el script de recolección de datos
 python model/add_pose.py
 
-# Controls:
-# SPACE - Record current pose
-# 'n' - Next gesture class (increment NUMBER)
-# 'p' - Previous gesture class
-# 'q' - Quit
+# Controles:
+# ESPACIO - Grabar pose actual
+# 'n' - Siguiente clase de gesto (incrementar NÚMERO)
+# 'p' - Clase anterior de gesto
+# 'q' - Salir
 ```
 
-#### Step 2: Update Labels
-Edit `model/keypoint_classifier_label.csv`:
+#### Paso 2: Actualizar Etiquetas
+Editar `model/keypoint_classifier_label.csv`:
 ```csv
-0,Standing
-1,Waving
-2,Pointing
-3,Arms_Up
-4,Arms_Down
-5,Your_New_Gesture
+0,De_pie
+1,Saludando
+2,Señalando
+3,Brazos_arriba
+4,Brazos_abajo
+5,Tu_nuevo_gesto
 ```
 
-#### Step 3: Train Model
-Use the Jupyter notebook `model/Keypoint_model_training.ipynb`:
+#### Paso 3: Entrenar Modelo
+Usar el notebook Jupyter `model/Keypoint_model_training.ipynb`:
 ```python
-# Key sections to modify:
-NUM_CLASSES = 6  # Update based on your gestures
-EPOCHS = 100     # Adjust based on dataset size
+# Secciones clave a modificar:
+NUM_CLASSES = 6  # Actualizar según tus gestos
+EPOCHS = 100     # Ajustar según el tamaño del dataset
 
-# The notebook will:
-# 1. Load pose data from CSV
-# 2. Split into train/test sets
-# 3. Build and train neural network
-# 4. Export to TFLite format
+# El notebook realizará:
+# 1. Cargar datos de pose desde CSV
+# 2. Dividir en conjuntos de entrenamiento/prueba
+# 3. Construir y entrenar red neuronal
+# 4. Exportar a formato TFLite
 ```
 
-#### Step 4: Deploy
-Replace model files:
+#### Paso 4: Implementar
+Reemplazar archivos del modelo:
 ```bash
-cp new_model.tflite model/keypoint_classifier.tflite
+cp nuevo_modelo.tflite model/keypoint_classifier.tflite
 ```
 
-### Creating Custom Pose Filters
+### Creando Filtros de Pose Personalizados
 
-Create a new filter in `mp_utils/custom_filters.py`:
+Crear un nuevo filtro en `mp_utils/filtros_personalizados.py`:
 ```python
-class CustomPoseFilter:
-    # Define which landmarks to include
-    UPPER_BODY_LANDMARKS = [11, 12, 13, 14, 15, 16]
-    LOWER_BODY_LANDMARKS = [23, 24, 25, 26, 27, 28]
-    HANDS_LANDMARKS = [15, 16, 17, 18, 19, 20, 21, 22]
+class FiltrosPosePersonalizados:
+    # Definir qué puntos clave incluir
+    PUNTOS_CLAVE_PARTE_SUPERIOR = [11, 12, 13, 14, 15, 16]
+    PUNTOS_CLAVE_PARTE_INFERIOR = [23, 24, 25, 26, 27, 28]
+    PUNTOS_CLAVE_MANOS = [15, 16, 17, 18, 19, 20, 21, 22]
     
     @staticmethod
-    def filter_upper_body(landmarks):
-        """Returns only upper body landmarks"""
-        return [landmarks[i] for i in CustomPoseFilter.UPPER_BODY_LANDMARKS
+    def filtrar_parte_superior(landmarks):
+        """Retorna únicamente puntos clave de la parte superior del cuerpo"""
+        return [landmarks[i] for i in FiltrosPosePersonalizados.PUNTOS_CLAVE_PARTE_SUPERIOR
                 if i < len(landmarks)]
     
     @staticmethod
-    def filter_for_sitting(landmarks):
-        """Optimized landmarks for sitting pose detection"""
-        # Include hips, shoulders, and head
-        sitting_landmarks = [0, 11, 12, 23, 24]
-        return [landmarks[i] for i in sitting_landmarks
+    def filtrar_para_sentado(landmarks):
+        """Puntos clave optimizados para detección de pose sentado"""
+        # Incluir caderas, hombros y cabeza
+        puntos_sentado = [0, 11, 12, 23, 24]
+        return [landmarks[i] for i in puntos_sentado
                 if i < len(landmarks)]
 ```
 
-### Implementing Custom Gesture Logic
+### Implementando Lógica de Gestos Personalizada
 
-Create action handlers in `instructions/gesture_actions.py`:
+Crear manejadores de acciones en `instructions/acciones_gestos.py`:
 ```python
 from enum import Enum
 
-class GestureAction(Enum):
-    NONE = 0
-    START_RECORDING = 1
-    STOP_RECORDING = 2
-    TAKE_PHOTO = 3
-    EMERGENCY_STOP = 4
+class AccionGesto(Enum):
+    NINGUNA = 0
+    INICIAR_GRABACION = 1
+    DETENER_GRABACION = 2
+    TOMAR_FOTO = 3
+    PARADA_EMERGENCIA = 4
 
-class GestureActionHandler:
+class ManejadorAccionGesto:
     def __init__(self):
-        self.action_map = {
-            "Waving": GestureAction.START_RECORDING,
-            "Stop": GestureAction.STOP_RECORDING,
-            "Peace": GestureAction.TAKE_PHOTO,
-            "X_Pose": GestureAction.EMERGENCY_STOP
+        self.mapa_acciones = {
+            "Saludando": AccionGesto.INICIAR_GRABACION,
+            "Alto": AccionGesto.DETENER_GRABACION,
+            "Paz": AccionGesto.TOMAR_FOTO,
+            "Pose_X": AccionGesto.PARADA_EMERGENCIA
         }
-        self.action_callbacks = {}
+        self.callbacks_acciones = {}
     
-    def register_callback(self, action: GestureAction, callback):
-        """Register a callback for a specific action"""
-        self.action_callbacks[action] = callback
+    def registrar_callback(self, accion: AccionGesto, callback):
+        """Registrar un callback para una acción específica"""
+        self.callbacks_acciones[accion] = callback
     
-    def process_gesture(self, gesture_name: str):
-        """Process gesture and trigger associated action"""
-        action = self.action_map.get(gesture_name, GestureAction.NONE)
+    def procesar_gesto(self, nombre_gesto: str):
+        """Procesar gesto y activar acción asociada"""
+        accion = self.mapa_acciones.get(nombre_gesto, AccionGesto.NINGUNA)
         
-        if action in self.action_callbacks:
-            self.action_callbacks[action]()
+        if accion in self.callbacks_acciones:
+            self.callbacks_acciones[accion]()
             return True
         return False
 
-# Usage example:
-handler = GestureActionHandler()
-handler.register_callback(
-    GestureAction.TAKE_PHOTO,
-    lambda: cv2.imwrite(f"photo_{time.time()}.jpg", frame)
+# Ejemplo de uso:
+manejador = ManejadorAccionGesto()
+manejador.registrar_callback(
+    AccionGesto.TOMAR_FOTO,
+    lambda: cv2.imwrite(f"foto_{time.time()}.jpg", frame)
 )
 ```
 
-### Custom Visualization
+### Visualización Personalizada
 
-Create enhanced visualizations in `gui/visualizations.py`:
+Crear visualizaciones mejoradas en `gui/visualizaciones.py`:
 ```python
 import cv2
 import numpy as np
 
-class PoseVisualizer:
+class VisualizadorPose:
     @staticmethod
-    def draw_skeleton_3d(image, landmarks, connections):
-        """Draw 3D skeleton with depth visualization"""
+    def dibujar_esqueleto_3d(image, landmarks, connections):
+        """Dibujar esqueleto 3D con visualización de profundidad"""
         height, width = image.shape[:2]
         
-        # Convert normalized coordinates to pixel coordinates
-        points = []
+        # Convertir coordenadas normalizadas a coordenadas de píxel
+        puntos = []
         for lm in landmarks:
             x = int(lm.x * width)
             y = int(lm.y * height)
-            z = lm.z * 100  # Scale Z for visibility
-            points.append((x, y, z))
+            z = lm.z * 100  # Escalar Z para visibilidad
+            puntos.append((x, y, z))
         
-        # Draw connections with thickness based on depth
-        for connection in connections:
-            if connection[0] < len(points) and connection[1] < len(points):
-                pt1 = points[connection[0]]
-                pt2 = points[connection[1]]
+        # Dibujar conexiones con grosor basado en profundidad
+        for conexion in connections:
+            if conexion[0] < len(puntos) and conexion[1] < len(puntos):
+                pt1 = puntos[conexion[0]]
+                pt2 = puntos[conexion[1]]
                 
-                # Calculate thickness based on average Z
-                avg_z = (pt1[2] + pt2[2]) / 2
-                thickness = int(5 - avg_z * 0.02)  # Closer = thicker
-                thickness = max(1, min(thickness, 10))
+                # Calcular grosor basado en Z promedio
+                z_promedio = (pt1[2] + pt2[2]) / 2
+                grosor = int(5 - z_promedio * 0.02)  # Más cerca = más grueso
+                grosor = max(1, min(grosor, 10))
                 
-                # Color based on depth (red=close, blue=far)
-                color_intensity = int(255 * (1 - avg_z / 200))
-                color = (color_intensity, 0, 255 - color_intensity)
+                # Color basado en profundidad (rojo=cerca, azul=lejos)
+                intensidad_color = int(255 * (1 - z_promedio / 200))
+                color = (intensidad_color, 0, 255 - intensidad_color)
                 
                 cv2.line(image, (pt1[0], pt1[1]), 
-                        (pt2[0], pt2[1]), color, thickness)
+                        (pt2[0], pt2[1]), color, grosor)
         
         return image
     
     @staticmethod
-    def draw_gesture_trail(image, gesture_history, position):
-        """Draw a trail showing gesture history"""
-        trail_length = min(len(gesture_history), 10)
+    def dibujar_rastro_gesto(image, historial_gestos, posicion):
+        """Dibujar un rastro mostrando historial de gestos"""
+        longitud_rastro = min(len(historial_gestos), 10)
         
-        for i in range(trail_length):
-            alpha = (i + 1) / trail_length
-            y_offset = position[1] - (trail_length - i) * 20
+        for i in range(longitud_rastro):
+            alpha = (i + 1) / longitud_rastro
+            y_offset = posicion[1] - (longitud_rastro - i) * 20
             
-            cv2.putText(image, gesture_history[-(i+1)],
-                       (position[0], y_offset),
+            cv2.putText(image, historial_gestos[-(i+1)],
+                       (posicion[0], y_offset),
                        cv2.FONT_HERSHEY_SIMPLEX,
                        0.5, (255, 255, 255),
                        int(2 * alpha))
@@ -209,119 +209,119 @@ class PoseVisualizer:
         return image
 ```
 
-### Performance Optimization
+### Optimización de Rendimiento
 
-#### 1. Async Processing
+#### 1. Procesamiento Asíncrono
 ```python
 import threading
 import queue
 
-class AsyncPoseProcessor:
+class ProcesadorPoseAsincrono:
     def __init__(self, detector, recognizer):
         self.detector = detector
         self.recognizer = recognizer
-        self.frame_queue = queue.Queue(maxsize=5)
-        self.result_queue = queue.Queue(maxsize=5)
-        self.processing_thread = threading.Thread(target=self._process_frames)
-        self.processing_thread.daemon = True
-        self.running = True
+        self.cola_frames = queue.Queue(maxsize=5)
+        self.cola_resultados = queue.Queue(maxsize=5)
+        self.hilo_procesamiento = threading.Thread(target=self._procesar_frames)
+        self.hilo_procesamiento.daemon = True
+        self.ejecutando = True
         
-    def start(self):
-        self.processing_thread.start()
+    def iniciar(self):
+        self.hilo_procesamiento.start()
     
-    def _process_frames(self):
-        while self.running:
+    def _procesar_frames(self):
+        while self.ejecutando:
             try:
-                frame = self.frame_queue.get(timeout=0.1)
+                frame = self.cola_frames.get(timeout=0.1)
                 results = self.detector.extract_pose(frame)
                 gesture_id, _ = self.recognizer.recognize_pose(results, frame)
-                self.result_queue.put((results, gesture_id))
+                self.cola_resultados.put((results, gesture_id))
             except queue.Empty:
                 continue
     
-    def process_frame_async(self, frame):
-        if not self.frame_queue.full():
-            self.frame_queue.put(frame)
+    def procesar_frame_asincrono(self, frame):
+        if not self.cola_frames.full():
+            self.cola_frames.put(frame)
     
-    def get_result(self):
+    def obtener_resultado(self):
         try:
-            return self.result_queue.get_nowait()
+            return self.cola_resultados.get_nowait()
         except queue.Empty:
             return None, None
 ```
 
-#### 2. Frame Skipping
+#### 2. Salto de Frames
 ```python
-class FrameSkipper:
-    def __init__(self, skip_frames=2):
-        self.skip_frames = skip_frames
-        self.frame_count = 0
+class SaltadorFrames:
+    def __init__(self, saltar_frames=2):
+        self.saltar_frames = saltar_frames
+        self.contador_frames = 0
     
-    def should_process(self):
-        self.frame_count += 1
-        return self.frame_count % (self.skip_frames + 1) == 0
+    def debe_procesar(self):
+        self.contador_frames += 1
+        return self.contador_frames % (self.saltar_frames + 1) == 0
 ```
 
-### Testing
+### Pruebas
 
-#### Unit Tests
-Create `tests/test_pose_recognition.py`:
+#### Pruebas Unitarias
+Crear `tests/test_reconocimiento_pose.py`:
 ```python
 import unittest
 import numpy as np
 from mp_utils.mp_pose import PoseDetection
 from neural_network.pose_recognition import PoseRecognizer
 
-class TestPoseRecognition(unittest.TestCase):
+class TestReconocimientoPose(unittest.TestCase):
     def setUp(self):
         self.detector = PoseDetection()
         self.recognizer = PoseRecognizer()
     
-    def test_pose_detection_with_blank_image(self):
-        # Test with blank image
-        blank_image = np.zeros((480, 640, 3), dtype=np.uint8)
-        results = self.detector.extract_pose(blank_image)
+    def test_deteccion_pose_con_imagen_vacia(self):
+        # Probar con imagen en blanco
+        imagen_vacia = np.zeros((480, 640, 3), dtype=np.uint8)
+        results = self.detector.extract_pose(imagen_vacia)
         self.assertIsNotNone(results)
         self.assertIsNone(results.pose_landmarks)
     
-    def test_landmark_filtering(self):
-        # Create mock landmarks
-        mock_landmarks = [MockLandmark(i*0.1, i*0.1, i*0.01, 1.0) 
+    def test_filtrado_puntos_clave(self):
+        # Crear puntos clave simulados
+        puntos_clave_simulados = [PuntoClaveSim(i*0.1, i*0.1, i*0.01, 1.0) 
                          for i in range(33)]
         
-        # Test filtering
-        self.detector.results = MockResults(mock_landmarks)
-        filtered = self.detector.filter_landmarks()
+        # Probar filtrado
+        self.detector.results = ResultadosSim(puntos_clave_simulados)
+        filtrados = self.detector.filter_landmarks()
         
-        # Should return 12 landmarks (indices 11-16, 23-28)
-        self.assertEqual(len(filtered), 12)
+        # Debe retornar 12 puntos clave (índices 11-16, 23-28)
+        self.assertEqual(len(filtrados), 12)
     
-    def test_gesture_buffer_consistency(self):
+    def test_consistencia_buffer_gestos(self):
         from instructions.gesture_buffer import GestureBuffer
         
         buffer = GestureBuffer(buffer_len=5, min_consistency=0.6)
         
-        # Add mostly gesture 1
+        # Añadir mayormente gesto 1
         for _ in range(3):
             buffer.add_gesture(1)
         buffer.add_gesture(2)
         buffer.add_gesture(1)
         
-        # Should return 1 (appears 4/5 times = 80%)
+        # Debe retornar 1 (aparece 4/5 veces = 80%)
         self.assertEqual(buffer.get_gesture(), 1)
 
-class MockLandmark:
+class PuntoClaveSim:
     def __init__(self, x, y, z, visibility):
         self.x = x
         self.y = y
         self.z = z
         self.visibility = visibility
 
-class MockResults:
+class ResultadosSim:
     def __init__(self, landmarks):
-        self.pose_landmarks = MockPoseLandmarks(landmarks)
+        self.pose_landmarks = PuntosClavesPoseSim(landmarks)
 
-class MockPoseLandmarks:
+class PuntosClavesPoseSim:
     def __init__(self, landmarks):
         self.landmark = landmarks
 
@@ -329,66 +329,66 @@ if __name__ == '__main__':
     unittest.main()
 ```
 
-### Debugging
+### Depuración
 
-#### Enable Debug Logging
+#### Habilitar Logging de Depuración
 ```python
 import logging
 
-# Configure logging
+# Configurar logging
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('pose_recognition.log'),
+        logging.FileHandler('reconocimiento_pose.log'),
         logging.StreamHandler()
     ]
 )
 
-# Add to your classes
-class PoseDetectionDebug(PoseDetection):
+# Añadir a tus clases
+class DeteccionPoseDebug(PoseDetection):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.logger = logging.getLogger(__name__)
     
     def extract_pose(self, image):
-        self.logger.debug(f"Processing image shape: {image.shape}")
+        self.logger.debug(f"Procesando imagen de tamaño: {image.shape}")
         results = super().extract_pose(image)
         
         if results and results.pose_landmarks:
-            self.logger.info(f"Detected {len(results.pose_landmarks.landmark)} landmarks")
+            self.logger.info(f"Detectados {len(results.pose_landmarks.landmark)} puntos clave")
         else:
-            self.logger.warning("No landmarks detected")
+            self.logger.warning("No se detectaron puntos clave")
         
         return results
 ```
 
-#### Visualization Tools
+#### Herramientas de Visualización
 ```python
-def debug_draw_landmarks(image, landmarks, title="Debug"):
-    """Draw all landmarks with indices for debugging"""
-    debug_image = image.copy()
+def dibujar_puntos_clave_debug(image, landmarks, titulo="Debug"):
+    """Dibujar todos los puntos clave con índices para depuración"""
+    imagen_debug = image.copy()
     height, width = image.shape[:2]
     
     for idx, landmark in enumerate(landmarks):
         x = int(landmark.x * width)
         y = int(landmark.y * height)
         
-        # Draw circle
-        cv2.circle(debug_image, (x, y), 5, (0, 255, 0), -1)
+        # Dibujar círculo
+        cv2.circle(imagen_debug, (x, y), 5, (0, 255, 0), -1)
         
-        # Draw index
-        cv2.putText(debug_image, str(idx), (x+5, y-5),
+        # Dibujar índice
+        cv2.putText(imagen_debug, str(idx), (x+5, y-5),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1)
     
-    cv2.imshow(title, debug_image)
-    return debug_image
+    cv2.imshow(titulo, imagen_debug)
+    return imagen_debug
 ```
 
-## Deployment
+## Implementación
 
-### Docker Support
-Create `Dockerfile`:
+### Soporte Docker
+Crear `Dockerfile`:
 ```dockerfile
 FROM python:3.8-slim
 
@@ -411,50 +411,190 @@ COPY . .
 CMD ["python", "main.py"]
 ```
 
-### Configuration Management
+### Gestión de Configuración
 ```python
 import os
 from pathlib import Path
 
-class ConfigManager:
-    def __init__(self, config_path="config_pose.json"):
-        self.config_path = Path(config_path)
-        self.config = self.load_config()
+class GestorConfiguracion:
+    def __init__(self, ruta_config="config_pose.json"):
+        self.ruta_config = Path(ruta_config)
+        self.config = self.cargar_config()
     
-    def load_config(self):
-        """Load config with environment variable overrides"""
-        with open(self.config_path, 'r') as f:
+    def cargar_config(self):
+        """Cargar configuración con sobreescritura de variables de entorno"""
+        with open(self.ruta_config, 'r') as f:
             config = json.load(f)
         
-        # Override with environment variables
-        if os.getenv('POSE_DETECTION_CONFIDENCE'):
+        # Sobreescribir con variables de entorno
+        if os.getenv('CONFIANZA_DETECCION_POSE'):
             config['constants']['pose']['min_pose_detection_confidence'] = \
-                float(os.getenv('POSE_DETECTION_CONFIDENCE'))
+                float(os.getenv('CONFIANZA_DETECCION_POSE'))
         
-        if os.getenv('BUFFER_LENGTH'):
+        if os.getenv('LONGITUD_BUFFER'):
             config['constants']['buffer_length'] = \
-                int(os.getenv('BUFFER_LENGTH'))
+                int(os.getenv('LONGITUD_BUFFER'))
         
         return config
     
-    def get(self, key_path, default=None):
-        """Get config value by dot notation path"""
-        keys = key_path.split('.')
-        value = self.config
+    def obtener(self, ruta_clave, por_defecto=None):
+        """Obtener valor de configuración por notación de punto"""
+        claves = ruta_clave.split('.')
+        valor = self.config
         
-        for key in keys:
-            if isinstance(value, dict) and key in value:
-                value = value[key]
+        for clave in claves:
+            if isinstance(valor, dict) and clave in valor:
+                valor = valor[clave]
             else:
-                return default
+                return por_defecto
         
-        return value
+        return valor
 ```
 
-## Contributing Guidelines
+## Guías de Contribución
 
-1. **Code Style**: Follow PEP 8
-2. **Documentation**: Update docstrings for all public methods
-3. **Testing**: Add unit tests for new features
-4. **Performance**: Profile changes that might impact FPS
-5. **Backwards Compatibility**: Maintain config file compatibility
+1. **Estilo de Código**: Seguir PEP 8
+2. **Documentación**: Actualizar docstrings para todos los métodos públicos
+3. **Pruebas**: Añadir pruebas unitarias para nuevas características
+4. **Rendimiento**: Perfilar cambios que puedan impactar FPS
+5. **Compatibilidad Hacia Atrás**: Mantener compatibilidad del archivo de configuración
+
+## Consideraciones de Seguridad
+
+### Validación de Entrada
+```python
+def validar_frame_entrada(frame):
+    """Validar frame de entrada antes de procesamiento"""
+    if frame is None:
+        raise ValueError("Frame no puede ser None")
+    
+    if not isinstance(frame, np.ndarray):
+        raise TypeError("Frame debe ser array numpy")
+    
+    if len(frame.shape) != 3 or frame.shape[2] != 3:
+        raise ValueError("Frame debe ser imagen BGR de 3 canales")
+    
+    if frame.size == 0:
+        raise ValueError("Frame no puede estar vacío")
+    
+    return True
+
+def sanitizar_nombre_gesto(nombre):
+    """Sanitizar nombres de gestos para prevenir inyección"""
+    import re
+    # Permitir solo caracteres alfanuméricos y guiones bajos
+    return re.sub(r'[^a-zA-Z0-9_]', '', nombre)
+```
+
+### Gestión Segura de Archivos
+```python
+import os
+from pathlib import Path
+
+def ruta_segura_modelo(ruta_modelo):
+    """Validar que la ruta del modelo es segura"""
+    ruta = Path(ruta_modelo).resolve()
+    directorio_base = Path("model").resolve()
+    
+    # Verificar que la ruta está dentro del directorio del modelo
+    try:
+        ruta.relative_to(directorio_base)
+    except ValueError:
+        raise SecurityError("Ruta del modelo fuera del directorio permitido")
+    
+    if not ruta.exists():
+        raise FileNotFoundError(f"Archivo del modelo no encontrado: {ruta}")
+    
+    return ruta
+```
+
+## Monitoreo y Métricas
+
+### Sistema de Métricas
+```python
+import time
+from collections import defaultdict
+
+class MonitorRendimiento:
+    def __init__(self):
+        self.metricas = defaultdict(list)
+        self.contadores = defaultdict(int)
+    
+    def cronometrar(self, nombre_operacion):
+        """Decorador para cronometrar operaciones"""
+        def decorador(func):
+            def wrapper(*args, **kwargs):
+                inicio = time.time()
+                try:
+                    resultado = func(*args, **kwargs)
+                    self.contadores[f"{nombre_operacion}_exito"] += 1
+                    return resultado
+                except Exception as e:
+                    self.contadores[f"{nombre_operacion}_error"] += 1
+                    raise
+                finally:
+                    duracion = time.time() - inicio
+                    self.metricas[nombre_operacion].append(duracion)
+            return wrapper
+        return decorador
+    
+    def obtener_estadisticas(self):
+        """Obtener estadísticas de rendimiento"""
+        estadisticas = {}
+        for operacion, tiempos in self.metricas.items():
+            if tiempos:
+                estadisticas[operacion] = {
+                    'promedio': sum(tiempos) / len(tiempos),
+                    'min': min(tiempos),
+                    'max': max(tiempos),
+                    'total_llamadas': len(tiempos)
+                }
+        
+        for contador, valor in self.contadores.items():
+            estadisticas[contador] = valor
+        
+        return estadisticas
+```
+
+## Integración Continua
+
+### Pipeline CI/CD
+Crear `.github/workflows/ci.yml`:
+```yaml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+    
+    - name: Run tests
+      run: |
+        pytest tests/ --cov=./ --cov-report=xml
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v1
+      with:
+        file: ./coverage.xml
+```
+
+Esto proporciona una base sólida para el desarrollo y extensión del sistema de reconocimiento de posturas, manteniendo altos estándares de calidad y seguridad.

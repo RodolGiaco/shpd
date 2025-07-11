@@ -1,8 +1,8 @@
-# Quick Reference Guide
+# Guía de Referencia Rápida
 
-## Common Code Snippets
+## Fragmentos de Código Comunes
 
-### Basic Pose Detection
+### Detección Básica de Poses
 ```python
 from mp_utils.pose_posture import PoseDetectionPosture
 
@@ -11,7 +11,7 @@ results = detector.extract_pose(frame)
 annotated = detector.draw_pose(frame)
 ```
 
-### Gesture Recognition
+### Reconocimiento de Gestos
 ```python
 from neural_network.pose_recognition import PoseRecognizer
 
@@ -20,17 +20,17 @@ gesture_id, labels = recognizer.recognize_pose(results, frame)
 gesture_name = recognizer.translate_gesture_id_to_name(gesture_id)
 ```
 
-### GUI Update
+### Actualización de GUI
 ```python
 from gui.gui import ThirdPersonGUI
 
 gui = ThirdPersonGUI(200, 300)
 gui.update_camera_window(frame)
-gui.update_info_window(True, 0, 100, "Standing")
+gui.update_info_window(True, 0, 100, "De pie")
 gui.show_window()
 ```
 
-### Gesture Buffer
+### Buffer de Gestos
 ```python
 from instructions.gesture_buffer import GestureBuffer
 
@@ -39,118 +39,118 @@ buffer.add_gesture(gesture_id)
 stable_gesture = buffer.get_gesture()
 ```
 
-## Configuration Quick Reference
+## Referencia Rápida de Configuración
 
-### Detection Confidence Levels
-| Confidence | Use Case | Performance Impact |
-|------------|----------|-------------------|
-| 0.3 | Maximum range, tracking partially visible poses | Low accuracy |
-| 0.5 | Balanced detection and tracking | Moderate |
-| 0.7 | High accuracy, clear poses only | May miss poses |
-| 0.9 | Very strict, perfect poses only | Very restrictive |
+### Niveles de Confianza de Detección
+| Confianza | Caso de Uso | Impacto en Rendimiento |
+|-----------|-------------|------------------------|
+| 0.3 | Rango máximo, seguimiento de poses parcialmente visibles | Baja precisión |
+| 0.5 | Detección y seguimiento balanceado | Moderado |
+| 0.7 | Alta precisión, solo poses claras | Puede perder poses |
+| 0.9 | Muy estricto, poses perfectas únicamente | Muy restrictivo |
 
-### Model Complexity
-| Level | Description | FPS Impact |
-|-------|-------------|------------|
-| 0 | Lite model | +3-5 FPS |
-| 1 | Full model | Baseline |
-| 2 | Heavy model | -2-3 FPS |
+### Complejidad del Modelo
+| Nivel | Descripción | Impacto en FPS |
+|-------|-------------|----------------|
+| 0 | Modelo lite | +3-5 FPS |
+| 1 | Modelo completo | Línea base |
+| 2 | Modelo pesado | -2-3 FPS |
 
-### Buffer Settings
-| Buffer Length | Response Time (30fps) | Stability |
-|--------------|----------------------|-----------|
-| 5 | 0.17s | Low |
-| 10 | 0.33s | Medium |
-| 20 | 0.67s | High |
-| 30 | 1.00s | Very High |
+### Configuraciones del Buffer
+| Longitud del Buffer | Tiempo de Respuesta (30fps) | Estabilidad |
+|-------------------|---------------------------|-------------|
+| 5 | 0.17s | Baja |
+| 10 | 0.33s | Media |
+| 20 | 0.67s | Alta |
+| 30 | 1.00s | Muy Alta |
 
-## MediaPipe Pose Landmarks
+## Puntos Clave de MediaPipe Pose
 
-### Filtered Landmarks (Used by System)
+### Puntos Clave Filtrados (Utilizados por el Sistema)
 ```
-11: Left Shoulder     12: Right Shoulder
-13: Left Elbow        14: Right Elbow
-15: Left Wrist        16: Right Wrist
-23: Left Hip          24: Right Hip
-25: Left Knee         26: Right Knee
-27: Left Ankle        28: Right Ankle
-```
-
-### All 33 Pose Landmarks
-```
-0: Nose
-1-10: Face landmarks
-11-22: Upper body
-23-32: Lower body
+11: Hombro Izquierdo     12: Hombro Derecho
+13: Codo Izquierdo       14: Codo Derecho
+15: Muñeca Izquierda     16: Muñeca Derecha
+23: Cadera Izquierda     24: Cadera Derecha
+25: Rodilla Izquierda    26: Rodilla Derecha
+27: Tobillo Izquierdo    28: Tobillo Derecho
 ```
 
-## Key Bindings
+### Los 33 Puntos Clave de Pose Completos
+```
+0: Nariz
+1-10: Puntos clave faciales
+11-22: Parte superior del cuerpo
+23-32: Parte inferior del cuerpo
+```
 
-### Main Application (`main.py`)
-- `q`: Quit application
+## Combinaciones de Teclas
 
-### Data Collection (`model/add_pose.py`)
-- `SPACE`: Record current pose
-- `n`: Next gesture class
-- `p`: Previous gesture class
-- `q`: Quit
+### Aplicación Principal (`main.py`)
+- `q`: Salir de la aplicación
 
-## File Formats
+### Recolección de Datos (`model/add_pose.py`)
+- `ESPACIO`: Grabar pose actual
+- `n`: Siguiente clase de gesto
+- `p`: Clase anterior de gesto
+- `q`: Salir
 
-### Gesture Labels CSV
+## Formatos de Archivos
+
+### CSV de Etiquetas de Gestos
 ```csv
-0,Standing
-1,Waving
-2,Pointing
-3,Arms_Up
-4,Arms_Down
+0,De_pie
+1,Saludando
+2,Señalando
+3,Brazos_arriba
+4,Brazos_abajo
 ```
 
-### Training Data CSV
+### CSV de Datos de Entrenamiento
 ```csv
 gesture_id,x1,y1,z1,x2,y2,z2,...,x12,y12,z12
 0,0.1,0.2,0.01,0.15,0.25,0.02,...
 ```
 
-## Common Issues & Solutions
+## Problemas Comunes y Soluciones
 
-### Camera Not Found
+### Cámara No Encontrada
 ```python
-cap = cv2.VideoCapture(0)  # Try 1, 2, etc. for different cameras
+cap = cv2.VideoCapture(0)  # Probar 1, 2, etc. para diferentes cámaras
 if not cap.isOpened():
-    print("Error: Camera not found")
+    print("Error: Cámara no encontrada")
 ```
 
-### Model Not Loading
+### Modelo No Se Carga
 ```python
-# Check file paths
+# Verificar rutas de archivos
 import os
 print(os.path.exists('model/keypoint_classifier.tflite'))
 print(os.path.exists('model/keypoint_classifier_label.csv'))
 ```
 
-### Low FPS
+### FPS Bajos
 ```python
-# Reduce model complexity
+# Reducir complejidad del modelo
 detector = PoseDetectionPosture(model_complexity=0)
 
-# Skip frames
-if frame_count % 2 == 0:  # Process every other frame
+# Saltar frames
+if frame_count % 2 == 0:  # Procesar cada segundo frame
     results = detector.extract_pose(frame)
 ```
 
-### Gesture Not Detecting
+### Gesto No Se Detecta
 ```python
-# Lower detection confidence
+# Reducir confianza de detección
 detector = PoseDetectionPosture(min_pose_detection_confidence=0.3)
 
-# Reduce buffer consistency requirement
+# Reducir requisito de consistencia del buffer
 buffer = GestureBuffer(buffer_len=10, min_consistency=0.5)
 ```
 
-## Environment Setup
+## Configuración del Entorno
 
-### Required Packages
+### Paquetes Requeridos
 ```bash
 opencv-python>=4.5.0
 mediapipe>=0.8.0
@@ -159,9 +159,9 @@ tflite-runtime>=2.5.0
 requests>=2.25.0
 ```
 
-### Directory Structure
+### Estructura de Directorios
 ```
-project/
+proyecto/
 ├── main.py
 ├── config_pose.json
 ├── API_DOCUMENTATION.md
@@ -189,28 +189,229 @@ project/
     └── Keypoint_model_training.ipynb
 ```
 
-## Performance Optimization Checklist
+## Lista de Verificación de Optimización de Rendimiento
 
-- [ ] Use appropriate model complexity (0 for speed, 2 for accuracy)
-- [ ] Adjust detection confidence based on environment
-- [ ] Implement frame skipping if needed
-- [ ] Use async processing for heavy operations
-- [ ] Profile with `cProfile` to find bottlenecks
-- [ ] Consider GPU acceleration if available
-- [ ] Optimize image resolution (640x480 often sufficient)
-- [ ] Use threading for independent operations
-- [ ] Cache repeated calculations
-- [ ] Minimize GUI updates per frame
+- [ ] Usar complejidad de modelo apropiada (0 para velocidad, 2 para precisión)
+- [ ] Ajustar confianza de detección según el entorno
+- [ ] Implementar salto de frames si es necesario
+- [ ] Usar procesamiento asíncrono para operaciones pesadas
+- [ ] Perfilar con `cProfile` para encontrar cuellos de botella
+- [ ] Considerar aceleración GPU si está disponible
+- [ ] Optimizar resolución de imagen (640x480 a menudo es suficiente)
+- [ ] Usar threading para operaciones independientes
+- [ ] Cachear cálculos repetidos
+- [ ] Minimizar actualizaciones de GUI por frame
 
-## Testing Checklist
+## Lista de Verificación de Pruebas
 
-- [ ] Test with different lighting conditions
-- [ ] Test with various distances from camera
-- [ ] Test with partial occlusions
-- [ ] Verify all gestures are recognized
-- [ ] Check memory usage over time
-- [ ] Validate CSV data integrity
-- [ ] Test error handling (no camera, missing files)
-- [ ] Verify configuration loading
-- [ ] Test with multiple people in frame
-- [ ] Check performance on target hardware
+- [ ] Probar con diferentes condiciones de iluminación
+- [ ] Probar con varias distancias de la cámara
+- [ ] Probar con oclusiones parciales
+- [ ] Verificar que todos los gestos sean reconocidos
+- [ ] Verificar uso de memoria a lo largo del tiempo
+- [ ] Validar integridad de datos CSV
+- [ ] Probar manejo de errores (sin cámara, archivos faltantes)
+- [ ] Verificar carga de configuración
+- [ ] Probar con múltiples personas en frame
+- [ ] Verificar rendimiento en hardware objetivo
+
+## Configuraciones Recomendadas por Escenario
+
+### Escritorio - Alta Precisión
+```json
+{
+  "constants": {
+    "pose": {
+      "min_pose_detection_confidence": 0.7,
+      "min_pose_tracking_confidence": 0.7,
+      "model_complexity": 2
+    },
+    "buffer_length": 30
+  }
+}
+```
+
+### Escritorio - Balanceado
+```json
+{
+  "constants": {
+    "pose": {
+      "min_pose_detection_confidence": 0.5,
+      "min_pose_tracking_confidence": 0.5,
+      "model_complexity": 1
+    },
+    "buffer_length": 20
+  }
+}
+```
+
+### Raspberry Pi - Optimizado
+```json
+{
+  "constants": {
+    "pose": {
+      "min_pose_detection_confidence": 0.3,
+      "min_pose_tracking_confidence": 0.3,
+      "model_complexity": 0
+    },
+    "buffer_length": 10,
+    "enable_segmentation": false
+  }
+}
+```
+
+## Comandos de Diagnóstico
+
+### Verificar Instalación
+```bash
+python3 -c "import cv2; print('OpenCV:', cv2.__version__)"
+python3 -c "import mediapipe; print('MediaPipe:', mediapipe.__version__)"
+python3 -c "import tflite_runtime.interpreter; print('TFLite: OK')"
+```
+
+### Probar Cámara
+```python
+import cv2
+cap = cv2.VideoCapture(0)
+ret, frame = cap.read()
+if ret:
+    print(f"Cámara OK - Resolución: {frame.shape}")
+    cv2.imshow("Test", frame)
+    cv2.waitKey(1000)
+else:
+    print("Error de cámara")
+cap.release()
+cv2.destroyAllWindows()
+```
+
+### Benchmark de Rendimiento
+```python
+import time
+import cv2
+from mp_utils.pose_posture import PoseDetectionPosture
+
+detector = PoseDetectionPosture()
+cap = cv2.VideoCapture(0)
+
+start_time = time.time()
+frame_count = 0
+
+while frame_count < 100:
+    ret, frame = cap.read()
+    if ret:
+        results = detector.extract_pose(frame)
+        frame_count += 1
+
+end_time = time.time()
+fps = frame_count / (end_time - start_time)
+print(f"FPS Promedio: {fps:.2f}")
+
+cap.release()
+detector.close()
+```
+
+## Patrones de Uso Avanzados
+
+### Procesamiento por Lotes
+```python
+def procesar_lote_frames(frames, detector):
+    """Procesar múltiples frames de manera eficiente"""
+    resultados = []
+    for frame in frames:
+        resultado = detector.extract_pose(frame)
+        resultados.append(resultado)
+    return resultados
+```
+
+### Detección con Timeouts
+```python
+import signal
+
+class TimeoutError(Exception):
+    pass
+
+def timeout_handler(signum, frame):
+    raise TimeoutError("Detección de pose timeout")
+
+def detectar_con_timeout(detector, frame, timeout_seconds=1):
+    """Detectar pose con timeout para evitar bloqueos"""
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(timeout_seconds)
+    
+    try:
+        resultado = detector.extract_pose(frame)
+        return resultado
+    except TimeoutError:
+        print("Detección de pose timeout")
+        return None
+    finally:
+        signal.alarm(0)
+```
+
+### Validación de Calidad de Pose
+```python
+def validar_calidad_pose(landmarks, umbral_visibilidad=0.5):
+    """Validar que la pose detectada tiene suficiente calidad"""
+    if not landmarks:
+        return False
+    
+    puntos_visibles = 0
+    total_puntos = len(landmarks)
+    
+    for landmark in landmarks:
+        if landmark.visibility > umbral_visibilidad:
+            puntos_visibles += 1
+    
+    ratio_visibilidad = puntos_visibles / total_puntos
+    return ratio_visibilidad > 0.7  # 70% de puntos deben ser visibles
+```
+
+## Solución de Problemas Avanzada
+
+### Memory Leaks
+```python
+import gc
+import psutil
+import os
+
+def monitorear_memoria():
+    """Monitorear uso de memoria del proceso"""
+    proceso = psutil.Process(os.getpid())
+    memoria_mb = proceso.memory_info().rss / 1024 / 1024
+    print(f"Uso de memoria: {memoria_mb:.2f} MB")
+    return memoria_mb
+
+# Llamar periódicamente para detectar memory leaks
+# Ejecutar gc.collect() si la memoria crece continuamente
+```
+
+### Debugging de Performance
+```python
+import cProfile
+import pstats
+
+def perfilar_deteccion_pose():
+    """Perfilar rendimiento de detección de pose"""
+    profiler = cProfile.Profile()
+    profiler.enable()
+    
+    # Tu código de detección aquí
+    detector = PoseDetectionPosture()
+    cap = cv2.VideoCapture(0)
+    
+    for _ in range(100):
+        ret, frame = cap.read()
+        if ret:
+            detector.extract_pose(frame)
+    
+    cap.release()
+    detector.close()
+    
+    profiler.disable()
+    
+    # Analizar resultados
+    stats = pstats.Stats(profiler)
+    stats.sort_stats('cumulative').print_stats(10)
+```
+
+Esta guía de referencia rápida proporciona acceso inmediato a los comandos y configuraciones más utilizados en el sistema de reconocimiento de posturas.

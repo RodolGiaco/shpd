@@ -1,60 +1,60 @@
-# Pose Recognition System - API Documentation
+# Documentación de la API - Sistema de Reconocimiento de Posturas
 
-## Table of Contents
-1. [Overview](#overview)
-2. [Installation](#installation)
-3. [Quick Start](#quick-start)
-4. [API Reference](#api-reference)
-   - [mp_utils Module](#mp_utils-module)
-   - [neural_network Module](#neural_network-module)
-   - [gui Module](#gui-module)
-   - [instructions Module](#instructions-module)
-   - [model Module](#model-module)
-5. [Configuration](#configuration)
-6. [Examples](#examples)
+## Tabla de Contenidos
+1. [Visión General](#visión-general)
+2. [Instalación](#instalación)
+3. [Inicio Rápido](#inicio-rápido)
+4. [Referencia de la API](#referencia-de-la-api)
+   - [Módulo mp_utils](#módulo-mp_utils)
+   - [Módulo neural_network](#módulo-neural_network)
+   - [Módulo gui](#módulo-gui)
+   - [Módulo instructions](#módulo-instructions)
+   - [Módulo model](#módulo-model)
+5. [Configuración](#configuración)
+6. [Ejemplos de Implementación](#ejemplos-de-implementación)
 
-## Overview
+## Visión General
 
-This pose recognition system uses MediaPipe for pose detection and a neural network for gesture classification. The system can detect human poses in real-time from a webcam feed, classify them into predefined gestures, and provide visual feedback through a GUI.
+Este sistema de reconocimiento de posturas utiliza **MediaPipe** para la detección de poses y **redes neuronales** para la clasificación de gestos. El sistema puede detectar posturas humanas en tiempo real desde una fuente de video, clasificarlas en gestos predefinidos y proporcionar retroalimentación visual mediante una interfaz gráfica de usuario.
 
-### Key Features
-- Real-time pose detection using MediaPipe
-- Neural network-based gesture classification
-- Configurable detection parameters
-- Visual feedback with pose overlays
-- Gesture buffering for stable predictions
-- Telegram integration for notifications
+### Características Principales
+- **Detección de posturas en tiempo real** utilizando MediaPipe
+- **Clasificación de gestos basada en redes neuronales**
+- **Parámetros de detección configurables**
+- **Retroalimentación visual** con superposición de poses
+- **Buffer de gestos** para predicciones estables
+- **Integración con Telegram** para notificaciones
 
-## Installation
+## Instalación
 
 ```bash
-# Install required dependencies
-pip install -r requeriments.txt
+# Instalar dependencias requeridas
+pip install -r requirements.txt
 ```
 
-### Dependencies
+### Dependencias
 - OpenCV (cv2)
 - MediaPipe
 - NumPy
 - TensorFlow Lite Runtime
-- Requests (for Telegram integration)
+- Requests (para integración con Telegram)
 
-## Quick Start
+## Inicio Rápido
 
 ```python
-# Run the main application
+# Ejecutar la aplicación principal
 python main.py
 ```
 
-Press 'q' to quit the application.
+Presionar 'q' para salir de la aplicación.
 
-## API Reference
+## Referencia de la API
 
-### mp_utils Module
+### Módulo mp_utils
 
 #### `mp_utils.mp_pose.PoseDetection`
 
-A class for pose detection using MediaPipe.
+Clase para la detección de posturas utilizando MediaPipe.
 
 ```python
 class PoseDetection:
@@ -66,48 +66,48 @@ class PoseDetection:
                  min_tracking_confidence=0.3)
 ```
 
-**Parameters:**
-- `static_image_mode` (bool): Whether to treat images as static or video stream
-- `model_complexity` (int): Model complexity (0, 1, or 2)
-- `enable_segmentation` (bool): Enable segmentation mask
-- `min_detection_confidence` (float): Minimum confidence for detection
-- `min_tracking_confidence` (float): Minimum confidence for tracking
+**Parámetros:**
+- `static_image_mode` (bool): Si tratar las imágenes como estáticas o flujo de video
+- `model_complexity` (int): Complejidad del modelo (0, 1, o 2)
+- `enable_segmentation` (bool): Habilitar máscara de segmentación
+- `min_detection_confidence` (float): Confianza mínima para detección
+- `min_tracking_confidence` (float): Confianza mínima para seguimiento
 
-**Methods:**
+**Métodos:**
 
 ##### `extract_pose(image) -> mediapipe.solutions.pose.PoseLandmarkerResult`
-Extracts pose landmarks from an image.
+Extrae los puntos clave de postura de una imagen.
 
-**Example:**
+**Ejemplo:**
 ```python
 pose_detector = PoseDetection()
 results = pose_detector.extract_pose(frame)
 ```
 
 ##### `draw_pose(image) -> np.ndarray`
-Draws pose landmarks on the image.
+Dibuja los puntos clave de postura sobre la imagen.
 
-**Example:**
+**Ejemplo:**
 ```python
 annotated_image = pose_detector.draw_pose(frame)
 cv2.imshow('Pose', annotated_image)
 ```
 
 ##### `filter_landmarks() -> List[List[float]]`
-Returns filtered landmarks for torso and limbs (indices 11-16, 23-28).
+Retorna puntos clave filtrados para torso y extremidades (índices 11-16, 23-28).
 
-**Example:**
+**Ejemplo:**
 ```python
 filtered_points = pose_detector.filter_landmarks()
-# Returns: [[x, y, z, visibility], ...]
+# Retorna: [[x, y, z, visibility], ...]
 ```
 
 ##### `close()`
-Releases MediaPipe resources.
+Libera los recursos de MediaPipe.
 
 #### `mp_utils.pose_posture.PoseDetectionPosture`
 
-A wrapper class for pose detection with posture-specific configuration.
+Clase wrapper para detección de posturas con configuración específica.
 
 ```python
 class PoseDetectionPosture:
@@ -118,13 +118,13 @@ class PoseDetectionPosture:
                  min_pose_tracking_confidence=0.3)
 ```
 
-Provides the same interface as `PoseDetection` with simplified initialization.
+Proporciona la misma interfaz que `PoseDetection` con inicialización simplificada.
 
-### neural_network Module
+### Módulo neural_network
 
 #### `neural_network.pose_recognition.PoseRecognizer`
 
-Handles pose recognition using a TensorFlow Lite model.
+Maneja el reconocimiento de posturas utilizando un modelo TensorFlow Lite.
 
 ```python
 class PoseRecognizer:
@@ -133,81 +133,81 @@ class PoseRecognizer:
                  label_path='model/keypoint_classifier_label.csv')
 ```
 
-**Parameters:**
-- `model_path` (str): Path to the TFLite model
-- `label_path` (str): Path to the CSV file with gesture labels
+**Parámetros:**
+- `model_path` (str): Ruta al modelo TFLite
+- `label_path` (str): Ruta al archivo CSV con etiquetas de gestos
 
-**Methods:**
+**Métodos:**
 
 ##### `recognize_pose(results, debug_image) -> Tuple[int, List[str]]`
-Recognizes a pose gesture from MediaPipe results.
+Reconoce un gesto de postura a partir de resultados de MediaPipe.
 
-**Returns:**
-- `gesture_id` (int): ID of the recognized gesture (-1 if none)
-- `labels` (List[str]): List of all available gesture labels
+**Retorna:**
+- `gesture_id` (int): ID del gesto reconocido (-1 si ninguno)
+- `labels` (List[str]): Lista de todas las etiquetas de gestos disponibles
 
-**Example:**
+**Ejemplo:**
 ```python
 recognizer = PoseRecognizer()
 gesture_id, labels = recognizer.recognize_pose(pose_results, frame)
 ```
 
 ##### `translate_gesture_id_to_name(gesture_id) -> str`
-Translates a gesture ID to its human-readable name.
+Traduce un ID de gesto a su nombre legible.
 
-**Example:**
+**Ejemplo:**
 ```python
 gesture_name = recognizer.translate_gesture_id_to_name(gesture_id)
-print(f"Detected gesture: {gesture_name}")
+print(f"Gesto detectado: {gesture_name}")
 ```
 
-### gui Module
+### Módulo gui
 
 #### `gui.ThirdPersonGUI`
 
-Manages the graphical user interface for the pose recognition system.
+Administra la interfaz gráfica de usuario para el sistema de reconocimiento de posturas.
 
 ```python
 class ThirdPersonGUI:
     def __init__(self, hand_window_height, hand_window_width)
 ```
 
-**Parameters:**
-- `hand_window_height` (int): Height of the hand window
-- `hand_window_width` (int): Width of the hand window
+**Parámetros:**
+- `hand_window_height` (int): Altura de la ventana de mano
+- `hand_window_width` (int): Ancho de la ventana de mano
 
-**Methods:**
+**Métodos:**
 
 ##### `update_camera_window(camera_window_image)`
-Updates the main camera window with a new frame.
+Actualiza la ventana principal de la cámara con un nuevo frame.
 
-**Example:**
+**Ejemplo:**
 ```python
 gui = ThirdPersonGUI(200, 300)
 gui.update_camera_window(annotated_frame)
 ```
 
 ##### `update_info_window(follow_state, move, battery, gesture_name)`
-Updates the information window with status data.
+Actualiza la ventana de información con datos de estado.
 
-**Parameters:**
-- `follow_state` (bool): Whether following is active
-- `move` (int): Current movement value
-- `battery` (int): Battery percentage (0-100)
-- `gesture_name` (str): Name of the current gesture
+**Parámetros:**
+- `follow_state` (bool): Si el seguimiento está activo
+- `move` (int): Valor de movimiento actual
+- `battery` (int): Porcentaje de batería (0-100)
+- `gesture_name` (str): Nombre del gesto actual
 
-**Example:**
+**Ejemplo:**
 ```python
-gui.update_info_window(True, 0, 85, "Standing")
+gui.update_info_window(True, 0, 85, "De pie")
 ```
 
 ##### `show_window()`
-Displays all GUI windows.
+Muestra todas las ventanas de GUI.
 
 ##### `getKey() -> int`
-Returns the key pressed by the user.
+Retorna la tecla presionada por el usuario.
 
-**Example:**
+**Ejemplo:**
 ```python
 key = gui.getKey()
 if key == ord('q'):
@@ -215,32 +215,32 @@ if key == ord('q'):
 ```
 
 ##### `close()`
-Closes all GUI windows.
+Cierra todas las ventanas de GUI.
 
-### instructions Module
+### Módulo instructions
 
 #### `instructions.gesture_buffer.GestureBuffer`
 
-Implements a buffer for gesture stabilization.
+Implementa un buffer para estabilización de gestos.
 
 ```python
 class GestureBuffer:
     def __init__(self, buffer_len=2, min_consistency=0.2)
 ```
 
-**Parameters:**
-- `buffer_len` (int): Length of the gesture buffer
-- `min_consistency` (float): Minimum consistency threshold (0-1)
+**Parámetros:**
+- `buffer_len` (int): Longitud del buffer de gestos
+- `min_consistency` (float): Umbral mínimo de consistencia (0-1)
 
-**Methods:**
+**Métodos:**
 
 ##### `add_gesture(gesture_id)`
-Adds a gesture to the buffer.
+Añade un gesto al buffer.
 
 ##### `get_gesture() -> int`
-Returns the most consistent gesture from the buffer.
+Retorna el gesto más consistente del buffer.
 
-**Example:**
+**Ejemplo:**
 ```python
 buffer = GestureBuffer(buffer_len=20, min_consistency=0.8)
 buffer.add_gesture(gesture_id)
@@ -249,55 +249,55 @@ stable_gesture = buffer.get_gesture()
 
 #### `instructions.gesture_instructions.Instructions`
 
-Handles gesture-based instructions and notifications.
+Maneja instrucciones basadas en gestos y notificaciones.
 
 ```python
 class Instructions:
     def __init__(self, following, speed=40, width=1000, height=500)
 ```
 
-**Parameters:**
-- `following` (bool): Initial following state
-- `speed` (int): Movement speed
-- `width` (int): Window width
-- `height` (int): Window height
+**Parámetros:**
+- `following` (bool): Estado inicial de seguimiento
+- `speed` (int): Velocidad de movimiento
+- `width` (int): Ancho de ventana
+- `height` (int): Alto de ventana
 
-**Methods:**
+**Métodos:**
 
 ##### `get_follow_state() -> bool`
-Returns the current following state.
+Retorna el estado actual de seguimiento.
 
 ##### `send_telegram_message(message)`
-Sends a message via Telegram bot.
+Envía un mensaje vía bot de Telegram.
 
-**Example:**
+**Ejemplo:**
 ```python
 instructions = Instructions(following=True)
-instructions.send_telegram_message("Gesture detected: Waving")
+instructions.send_telegram_message("Gesto detectado: Saludando")
 ```
 
-### model Module
+### Módulo model
 
 #### `model.add_pose.PoseLandmarkerAndResult`
 
-Handles pose landmark detection for data collection.
+Maneja la detección de puntos clave de postura para recolección de datos.
 
 ```python
 class PoseLandmarkerAndResult:
     def __init__(self)
 ```
 
-**Methods:**
+**Métodos:**
 
 ##### `detect_async(frame)`
-Performs asynchronous pose detection.
+Realiza detección de postura asíncrona.
 
 ##### `close()`
-Closes the pose landmarker.
+Cierra el detector de puntos clave.
 
-## Configuration
+## Configuración
 
-The system uses a `config_pose.json` file for configuration:
+El sistema utiliza un archivo `config_pose.json` para configuración:
 
 ```json
 {
@@ -324,18 +324,18 @@ The system uses a `config_pose.json` file for configuration:
 }
 ```
 
-## Examples
+## Ejemplos de Implementación
 
-### Basic Pose Detection
+### Detección Básica de Posturas
 
 ```python
 import cv2
 from mp_utils.mp_pose import PoseDetection
 
-# Initialize pose detector
+# Inicializar detector de posturas
 detector = PoseDetection(min_detection_confidence=0.5)
 
-# Capture from webcam
+# Capturar desde webcam
 cap = cv2.VideoCapture(0)
 
 while True:
@@ -343,14 +343,14 @@ while True:
     if not ret:
         break
     
-    # Detect pose
+    # Detectar postura
     results = detector.extract_pose(frame)
     
-    # Draw pose on frame
+    # Dibujar postura en frame
     annotated_frame = detector.draw_pose(frame)
     
-    # Display
-    cv2.imshow('Pose Detection', annotated_frame)
+    # Mostrar
+    cv2.imshow('Detección de Postura', annotated_frame)
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
@@ -360,32 +360,32 @@ cv2.destroyAllWindows()
 detector.close()
 ```
 
-### Gesture Recognition with Buffer
+### Reconocimiento de Gestos con Buffer
 
 ```python
 from neural_network.pose_recognition import PoseRecognizer
 from instructions.gesture_buffer import GestureBuffer
 from mp_utils.pose_posture import PoseDetectionPosture
 
-# Initialize components
+# Inicializar componentes
 detector = PoseDetectionPosture()
 recognizer = PoseRecognizer()
 buffer = GestureBuffer(buffer_len=20, min_consistency=0.8)
 
-# Process frame
+# Procesar frame
 results = detector.extract_pose(frame)
 gesture_id, _ = recognizer.recognize_pose(results, frame)
 
-# Add to buffer for stability
+# Añadir al buffer para estabilidad
 buffer.add_gesture(gesture_id)
 stable_gesture = buffer.get_gesture()
 
-# Get gesture name
+# Obtener nombre del gesto
 gesture_name = recognizer.translate_gesture_id_to_name(stable_gesture)
-print(f"Detected: {gesture_name}")
+print(f"Detectado: {gesture_name}")
 ```
 
-### Complete Application Example
+### Aplicación Completa de Ejemplo
 
 ```python
 import cv2
@@ -395,11 +395,11 @@ from neural_network.pose_recognition import PoseRecognizer
 from gui.gui import ThirdPersonGUI
 from instructions.gesture_buffer import GestureBuffer
 
-# Load configuration
+# Cargar configuración
 with open('config_pose.json', 'r') as f:
     config = json.load(f)
 
-# Initialize components
+# Inicializar componentes
 detector = PoseDetectionPosture(
     min_pose_detection_confidence=config['constants']['pose']['min_pose_detection_confidence']
 )
@@ -412,24 +412,24 @@ gui = ThirdPersonGUI(
 )
 buffer = GestureBuffer(buffer_len=config['constants']['buffer_length'])
 
-# Main loop
+# Bucle principal
 cap = cv2.VideoCapture(0)
 while True:
     ret, frame = cap.read()
     if not ret:
         break
     
-    # Process pose
+    # Procesar postura
     results = detector.extract_pose(frame)
     annotated_frame = detector.draw_pose(frame)
     
-    # Recognize gesture
+    # Reconocer gesto
     gesture_id, _ = recognizer.recognize_pose(results, frame)
     buffer.add_gesture(gesture_id)
     stable_gesture = buffer.get_gesture()
     gesture_name = recognizer.translate_gesture_id_to_name(stable_gesture)
     
-    # Update GUI
+    # Actualizar GUI
     gui.update_camera_window(annotated_frame)
     gui.update_info_window(False, 0, 100, gesture_name)
     gui.show_window()
@@ -437,42 +437,42 @@ while True:
     if gui.getKey() == ord('q'):
         break
 
-# Cleanup
+# Limpieza
 cap.release()
 detector.close()
 gui.close()
 ```
 
-### Adding New Poses to Dataset
+### Añadir Nuevas Posturas al Dataset
 
 ```python
 from model.add_pose import PoseLandmarkerAndResult
 import cv2
 import csv
 
-# Initialize landmarker
+# Inicializar detector de puntos clave
 landmarker = PoseLandmarkerAndResult()
 cap = cv2.VideoCapture(0)
 
-# Open CSV for writing
+# Abrir CSV para escritura
 with open('new_poses.csv', 'a', newline='') as f:
     writer = csv.writer(f)
     
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)  # Mirror frame
+        frame = cv2.flip(frame, 1)  # Espejo del frame
         
-        # Detect pose
+        # Detectar postura
         landmarker.detect_async(frame)
         
-        # Draw landmarks
+        # Dibujar puntos clave
         annotated = draw_landmarks_on_image(frame, landmarker.result)
-        cv2.imshow('Pose Collection', annotated)
+        cv2.imshow('Recolección de Posturas', annotated)
         
         key = cv2.waitKey(1)
         if key == ord('q'):
             break
-        elif key == ord(' '):  # Space to save pose
+        elif key == ord(' '):  # Espacio para guardar postura
             add_to_csv(frame, landmarker.result, writer)
 
 landmarker.close()
@@ -480,30 +480,30 @@ cap.release()
 cv2.destroyAllWindows()
 ```
 
-## Best Practices
+## Mejores Prácticas
 
-1. **Confidence Thresholds**: Adjust detection confidence based on your use case
-   - Higher values (0.7-0.9) for accuracy
-   - Lower values (0.3-0.5) for responsiveness
+1. **Umbrales de Confianza**: Ajustar la confianza de detección según el caso de uso
+   - Valores altos (0.7-0.9) para precisión
+   - Valores bajos (0.3-0.5) para capacidad de respuesta
 
-2. **Buffer Length**: Set buffer length based on gesture complexity
-   - Shorter buffers (10-20) for quick gestures
-   - Longer buffers (30-50) for complex poses
+2. **Longitud del Buffer**: Establecer longitud del buffer según complejidad del gesto
+   - Buffers cortos (10-20) para gestos rápidos
+   - Buffers largos (30-50) para poses complejas
 
-3. **Resource Management**: Always close detectors and release resources
+3. **Gestión de Recursos**: Siempre cerrar detectores y liberar recursos
    ```python
    detector.close()
    cap.release()
    cv2.destroyAllWindows()
    ```
 
-4. **Error Handling**: Check for None results
+4. **Manejo de Errores**: Verificar resultados None
    ```python
    if results and results.pose_landmarks:
-       # Process landmarks
+       # Procesar puntos clave
    ```
 
-5. **Performance**: Use appropriate model complexity
-   - 0: Lite model for mobile/embedded
-   - 1: Full model for desktop
-   - 2: Heavy model for best accuracy
+5. **Rendimiento**: Usar complejidad de modelo apropiada
+   - 0: Modelo lite para móvil/embebido
+   - 1: Modelo completo para escritorio
+   - 2: Modelo pesado para mejor precisión

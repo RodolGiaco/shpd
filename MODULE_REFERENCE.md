@@ -1,15 +1,15 @@
-# Module Reference Documentation
+# Documentación de Referencia de Módulos
 
-## mp_utils Module
+## Módulo mp_utils
 
-### Overview
-The `mp_utils` module provides utilities for pose detection using MediaPipe. It contains two main components:
-- `mp_pose.py`: Core pose detection functionality
-- `pose_posture.py`: Specialized wrapper for posture detection
+### Descripción General
+El módulo `mp_utils` proporciona utilidades para la detección de posturas utilizando MediaPipe. Contiene dos componentes principales:
+- `mp_pose.py`: Funcionalidad de detección de poses
+- `pose_posture.py`: Wrapper especializado para detección de posturas
 
 ### mp_pose.PoseDetection
 
-#### Class Overview
+#### Descripción de la Clase
 ```python
 mp_utils.mp_pose.PoseDetection(
     static_image_mode=False,
@@ -20,143 +20,143 @@ mp_utils.mp_pose.PoseDetection(
 )
 ```
 
-#### Detailed Method Documentation
+#### Documentación Detallada de Métodos
 
 ##### `extract_pose(image: np.ndarray) -> mediapipe.python.solution_base.SolutionOutputs`
 
-Processes an image to extract pose landmarks.
+Procesa una imagen para extraer puntos clave de postura.
 
-**Parameters:**
-- `image`: BGR image as numpy array
+**Parámetros:**
+- `image`: Imagen BGR como array de numpy
 
-**Returns:**
-- MediaPipe pose results containing:
-  - `pose_landmarks`: 33 pose landmarks in image coordinates
-  - `pose_world_landmarks`: 33 pose landmarks in world coordinates
-  - `segmentation_mask`: Binary mask of the person (if enabled)
+**Retorna:**
+- Resultados de pose de MediaPipe que contienen:
+  - `pose_landmarks`: 33 puntos clave de postura en coordenadas de imagen
+  - `pose_world_landmarks`: 33 puntos clave de postura en coordenadas mundiales
+  - `segmentation_mask`: Máscara binaria de la persona (si está habilitada)
 
-**Example:**
+**Ejemplo:**
 ```python
 import cv2
 from mp_utils.mp_pose import PoseDetection
 
 detector = PoseDetection()
-image = cv2.imread('person.jpg')
+image = cv2.imread('persona.jpg')
 results = detector.extract_pose(image)
 
 if results.pose_landmarks:
     for idx, landmark in enumerate(results.pose_landmarks.landmark):
-        print(f"Landmark {idx}: x={landmark.x}, y={landmark.y}, z={landmark.z}")
+        print(f"Punto clave {idx}: x={landmark.x}, y={landmark.y}, z={landmark.z}")
 ```
 
 ##### `filter_landmarks() -> List[List[float]]`
 
-Filters and returns only torso and limb landmarks.
+Filtra y retorna únicamente los puntos clave del torso y extremidades.
 
-**Included Landmarks:**
-- 11-16: Upper body (shoulders, elbows, wrists)
-- 23-28: Lower body (hips, knees, ankles)
+**Puntos clave incluidos:**
+- 11-16: Parte superior del cuerpo (hombros, codos, muñecas)
+- 23-28: Parte inferior del cuerpo (caderas, rodillas, tobillos)
 
-**Returns:**
+**Retorna:**
 ```python
 [
-    [x, y, z, visibility],  # Landmark 11
-    [x, y, z, visibility],  # Landmark 12
+    [x, y, z, visibility],  # Punto clave 11
+    [x, y, z, visibility],  # Punto clave 12
     # ... etc
 ]
 ```
 
-## neural_network Module
+## Módulo neural_network
 
 ### pose_recognition.PoseRecognizer
 
-#### Class Overview
-Implements pose gesture recognition using TensorFlow Lite.
+#### Descripción de la Clase
+Implementa el reconocimiento de gestos posturales utilizando TensorFlow Lite.
 
-#### Internal Processing Pipeline
+#### Pipeline de Procesamiento Interno
 
-1. **Landmark Calculation** (`calc_landmark_list`):
-   - Converts normalized landmarks to pixel coordinates
-   - Filters to include only specific body parts
-   - Includes Z-coordinate for depth information
+1. **Cálculo de puntos clave** (`calc_landmark_list`):
+   - Convierte puntos clave normalizados a coordenadas de píxel
+   - Filtra para incluir únicamente partes específicas del cuerpo
+   - Incluye coordenada Z para información de profundidad
 
-2. **Preprocessing** (`pre_process_landmark`):
-   - Converts to relative coordinates (first point as origin)
-   - Flattens 3D coordinates to 1D array
-   - Normalizes by maximum absolute value
+2. **Preprocesamiento** (`pre_process_landmark`):
+   - Convierte a coordenadas relativas (primer punto como origen)
+   - Aplana coordenadas 3D a array 1D
+   - Normaliza por valor absoluto máximo
 
-3. **Classification**:
-   - Feeds preprocessed landmarks to TFLite model
-   - Returns gesture ID with highest confidence
+3. **Clasificación**:
+   - Alimenta puntos clave preprocesados al modelo TFLite
+   - Retorna ID de gesto con mayor confianza
 
-#### Gesture Label Management
+#### Gestión de Etiquetas de Gestos
 
-The system uses a CSV file to map gesture IDs to names:
+El sistema utiliza un archivo CSV para mapear IDs de gestos a nombres:
 ```csv
-0,Standing
-1,Waving
-2,Pointing
-3,Arms_Up
-4,Arms_Down
+0,De pie
+1,Saludando
+2,Señalando
+3,Brazos arriba
+4,Brazos abajo
 ```
 
-## gui Module
+## Módulo gui
 
 ### ThirdPersonGUI
 
-#### Window Management
+#### Gestión de Ventanas
 
-The GUI manages three separate OpenCV windows:
+La GUI administra tres ventanas separadas de OpenCV:
 
-1. **Camera Window** (`ThirdPerson`):
-   - Main view showing pose overlay
-   - Full camera feed with landmarks
+1. **Ventana de Cámara** (`ThirdPerson`):
+   - Vista principal mostrando superposición de pose
+   - Feed de cámara completo con puntos clave
 
-2. **Info Window** (`Info`):
-   - Status information display
-   - Shows: Following state, Movement, Battery, Gesture
+2. **Ventana de Información** (`Info`):
+   - Visualización de información de estado
+   - Muestra: Estado de seguimiento, Movimiento, Batería, Gesto
 
-3. **Hand Window** (`hand`):
-   - Optional detailed hand view
-   - Currently disabled in main.py
+3. **Ventana de Mano** (`hand`):
+   - Vista detallada opcional de manos
+   - Actualmente deshabilitada en main.py
 
-#### Overlay System
+#### Sistema de Superposición
 
-The `overlay_text_on_rect` method creates information overlays:
+El método `overlay_text_on_rect` crea superposiciones de información:
 ```python
 def overlay_text_on_rect(self, frame, text, rect_position, text_position, 
                          font_scale=1, color=(255, 255, 255), thickness=2)
 ```
 
-Creates a black rectangle background with white text for better visibility.
+Crea un fondo rectangular negro con texto blanco para mejor visibilidad.
 
-## instructions Module
+## Módulo instructions
 
 ### gesture_buffer.GestureBuffer
 
-#### Buffer Algorithm
+#### Algoritmo del Buffer
 
-Implements a rolling buffer with consistency checking:
+Implementa un buffer circular con verificación de consistencia:
 
 ```python
-# Internal flow:
-1. Add gesture to deque (fixed size)
-2. When full, count most common gesture
-3. If count >= min_consistency * buffer_len:
-   - Clear buffer
-   - Return gesture
-4. Else return last valid gesture
+# Flujo interno:
+1. Añadir gesto al deque (tamaño fijo)
+2. Cuando esté lleno, contar gesto más común
+3. Si conteo >= min_consistency * buffer_len:
+   - Limpiar buffer
+   - Retornar gesto
+4. Si no, retornar último gesto válido
 ```
 
-#### Use Cases
-- **High consistency (0.8-0.9)**: Requires very stable pose
-- **Low consistency (0.2-0.5)**: More responsive, less stable
+#### Casos de Uso
+- **Alta consistencia (0.8-0.9)**: Requiere pose muy estable
+- **Baja consistencia (0.2-0.5)**: Más responsivo, menos estable
 
 ### gesture_instructions.Instructions
 
-#### Telegram Integration
+#### Integración con Telegram
 
-Sends notifications via Telegram Bot API:
+Envía notificaciones vía API Bot de Telegram:
 ```python
 def send_telegram_message(self, message):
     url = f"https://api.telegram.org/bot{self.telegram_token}/sendMessage"
@@ -164,97 +164,97 @@ def send_telegram_message(self, message):
     response = requests.post(url, data=data)
 ```
 
-**Security Note**: Token and chat ID should be moved to config file.
+**Nota de Seguridad**: Token y chat ID deberían moverse al archivo de configuración.
 
-## model Module
+## Módulo model
 
-### add_pose.py Utilities
+### add_pose.py Utilidades
 
-#### Data Collection Functions
+#### Funciones de Recolección de Datos
 
 ##### `add_to_csv(image, results, writer)`
-Processes and saves pose data for training:
-1. Filters landmarks to relevant joints
-2. Calculates pixel coordinates
-3. Normalizes relative to first landmark
-4. Writes as CSV row: `[gesture_id, x1, y1, z1, x2, y2, z2, ...]`
+Procesa y guarda datos de pose para entrenamiento:
+1. Filtra puntos clave a articulaciones relevantes
+2. Calcula coordenadas de píxel
+3. Normaliza relativo al primer punto clave
+4. Escribe como fila CSV: `[gesture_id, x1, y1, z1, x2, y2, z2, ...]`
 
 ##### `validar_csv(csv_path)`
-Validates training data integrity:
-- Checks for 37 columns (1 label + 12 landmarks * 3 coordinates)
-- Warns if all Z-values are 0
-- Reports malformed rows
+Valida integridad de datos de entrenamiento:
+- Verifica 37 columnas (1 etiqueta + 12 puntos clave * 3 coordenadas)
+- Advierte si todos los valores Z son 0
+- Reporta filas malformadas
 
-#### Custom Landmark Drawing
+#### Visualización Personalizada de Puntos Clave
 
-Provides alternative visualization without face landmarks:
+Proporciona visualización alternativa sin puntos clave faciales:
 ```python
 POSE_CONNECTIONS_WITHOUT_FACE = [
-    (11, 12), (12, 14), (14, 16),  # Right arm
-    (11, 13), (13, 15), (15, 17),  # Left arm
-    (23, 24), (24, 26), (26, 28),  # Right leg
-    (23, 25), (25, 27), (27, 29),  # Left leg
+    (11, 12), (12, 14), (14, 16),  # Brazo derecho
+    (11, 13), (13, 15), (15, 17),  # Brazo izquierdo
+    (23, 24), (24, 26), (26, 28),  # Pierna derecha
+    (23, 25), (25, 27), (27, 29),  # Pierna izquierda
     (11, 23), (12, 24), (23, 24),  # Torso
 ]
 ```
 
-## Configuration Details
+## Detalles de Configuración
 
-### config_pose.json Structure
+### Estructura de config_pose.json
 
 ```json
 {
   "constants": {
     "pose": {
-      "min_pose_detection_confidence": 0.5,  // Initial detection threshold
-      "min_pose_tracking_confidence": 0.5,   // Frame-to-frame tracking
-      "min_pose_presence_confidence": 0.5    // Landmark visibility
+      "min_pose_detection_confidence": 0.5,  // Umbral de detección inicial
+      "min_pose_tracking_confidence": 0.5,   // Seguimiento frame a frame
+      "min_pose_presence_confidence": 0.5    // Visibilidad de puntos clave
     },
     "gui": {
       "hand_window_height": 200,
       "hand_window_width": 300
     },
-    "buffer_length": 20,        // Gesture stability buffer
-    "speed": 40                 // Movement speed (unused)
+    "buffer_length": 20,        // Buffer de estabilidad de gestos
+    "speed": 40                 // Velocidad de movimiento (sin usar)
   },
   "model_paths": {
     "pose_recogniser": "model/keypoint_classifier.tflite",
     "keypoint_classifier_labels": "model/keypoint_classifier_label.csv"
   },
   "initial_options": {
-    "following": false          // Initial follow state
+    "following": false          // Estado inicial de seguimiento
   }
 }
 ```
 
-### Performance Tuning
+### Ajuste de Rendimiento
 
-#### Detection Confidence
-- **0.3-0.4**: Maximum detection range, more false positives
-- **0.5-0.6**: Balanced performance
-- **0.7-0.9**: High accuracy, may miss distant/occluded poses
+#### Confianza de Detección
+- **0.3-0.4**: Rango máximo de detección, más falsos positivos
+- **0.5-0.6**: Rendimiento balanceado
+- **0.7-0.9**: Alta precisión, puede perder poses distantes/ocluidas
 
-#### Model Complexity
-- **0**: Lite model (~3-5 FPS improvement)
-- **1**: Full model (balanced)
-- **2**: Heavy model (best accuracy, ~2-3 FPS slower)
+#### Complejidad del Modelo
+- **0**: Modelo lite (~3-5 FPS de mejora)
+- **1**: Modelo completo (balanceado)
+- **2**: Modelo pesado (mejor precisión, ~2-3 FPS más lento)
 
-#### Buffer Length Impact
-- **5-10 frames**: Near instant response (0.17-0.33s @ 30fps)
-- **20-30 frames**: Balanced (0.67-1s @ 30fps)
-- **40-60 frames**: Very stable (1.33-2s @ 30fps)
+#### Impacto de Longitud del Buffer
+- **5-10 frames**: Respuesta casi instantánea (0.17-0.33s @ 30fps)
+- **20-30 frames**: Balanceado (0.67-1s @ 30fps)
+- **40-60 frames**: Muy estable (1.33-2s @ 30fps)
 
-## Error Handling
+## Manejo de Errores
 
-### Common Issues and Solutions
+### Problemas Comunes y Soluciones
 
-1. **No Pose Detected**
+1. **No se Detecta Pose**
    ```python
    if results is None or not results.pose_landmarks:
-       return -1  # No gesture
+       return -1  # Sin gesto
    ```
 
-2. **Camera Not Available**
+2. **Cámara No Disponible**
    ```python
    cap = cv.VideoCapture(0)
    if not cap.isOpened():
@@ -262,42 +262,125 @@ POSE_CONNECTIONS_WITHOUT_FACE = [
        return
    ```
 
-3. **Model Loading Errors**
-   - Check file paths in config
-   - Ensure .tflite and .csv files exist
-   - Verify TFLite runtime installation
+3. **Errores de Carga del Modelo**
+   - Verificar rutas de archivos en configuración
+   - Asegurar que archivos .tflite y .csv existan
+   - Verificar instalación de TFLite runtime
 
-## Advanced Usage
+## Uso Avanzado
 
-### Custom Gesture Addition
+### Adición de Gestos Personalizados
 
-1. Collect training data:
+1. Recolectar datos de entrenamiento:
    ```bash
    python model/add_pose.py
-   # Press SPACE to record poses
-   # Press 'n' for next gesture class
+   # Presionar SPACE para grabar poses
+   # Presionar 'n' para siguiente clase de gesto
    ```
 
-2. Train new model:
-   - Use `model/Keypoint_model_training.ipynb`
-   - Update label CSV with new gestures
+2. Entrenar nuevo modelo:
+   - Usar `model/Keypoint_model_training.ipynb`
+   - Actualizar CSV de etiquetas con nuevos gestos
 
-3. Deploy:
-   - Replace `keypoint_classifier.tflite`
-   - Update `keypoint_classifier_label.csv`
+3. Implementar:
+   - Reemplazar `keypoint_classifier.tflite`
+   - Actualizar `keypoint_classifier_label.csv`
 
-### Multi-Person Support
+### Soporte Multi-Persona
 
-Current implementation processes single person. For multi-person:
+La implementación actual procesa una sola persona. Para multi-persona:
 ```python
-# Modify in mp_pose.py
+# Modificar en mp_pose.py
 self.pose = self.mp_pose.Pose(
     static_image_mode=static_image_mode,
     model_complexity=model_complexity,
-    smooth_landmarks=True,  # Add smoothing
+    smooth_landmarks=True,  # Añadir suavizado
     enable_segmentation=enable_segmentation,
-    smooth_segmentation=True,  # Smooth masks
+    smooth_segmentation=True,  # Suavizar máscaras
     min_detection_confidence=min_detection_confidence,
     min_tracking_confidence=min_tracking_confidence
 )
+```
+
+### Optimizaciones de Rendimiento
+
+#### Técnicas de Optimización de Memoria
+```python
+# Configurar límites de memoria GPU (si aplica)
+import os
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+
+# Usar procesamiento por lotes para múltiples frames
+def process_batch(frames):
+    results = []
+    for frame in frames:
+        result = detector.extract_pose(frame)
+        results.append(result)
+    return results
+```
+
+#### Implementación de Pool de Threads
+```python
+import concurrent.futures
+import threading
+
+class ThreadedPoseProcessor:
+    def __init__(self, num_threads=4):
+        self.num_threads = num_threads
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
+    
+    def process_frames_parallel(self, frames):
+        futures = []
+        for frame in frames:
+            future = self.executor.submit(self.detector.extract_pose, frame)
+            futures.append(future)
+        
+        results = []
+        for future in concurrent.futures.as_completed(futures):
+            results.append(future.result())
+        return results
+```
+
+### Métricas de Evaluación
+
+#### Análisis de Rendimiento en Tiempo Real
+```python
+import time
+from collections import deque
+
+class PerformanceMonitor:
+    def __init__(self, window_size=100):
+        self.frame_times = deque(maxlen=window_size)
+        self.processing_times = deque(maxlen=window_size)
+    
+    def update(self, frame_time, processing_time):
+        self.frame_times.append(frame_time)
+        self.processing_times.append(processing_time)
+    
+    def get_fps(self):
+        if len(self.frame_times) < 2:
+            return 0
+        total_time = sum(self.frame_times)
+        return len(self.frame_times) / total_time
+    
+    def get_avg_processing_time(self):
+        return sum(self.processing_times) / len(self.processing_times)
+```
+
+#### Validación de Calidad de Datos
+```python
+def validate_pose_quality(landmarks, min_visibility=0.5):
+    """Valida la calidad de los puntos clave detectados"""
+    if not landmarks:
+        return False
+    
+    visible_count = 0
+    total_count = len(landmarks)
+    
+    for landmark in landmarks:
+        if landmark.visibility > min_visibility:
+            visible_count += 1
+    
+    visibility_ratio = visible_count / total_count
+    return visibility_ratio > 0.7  # 70% de puntos deben ser visibles
 ```
