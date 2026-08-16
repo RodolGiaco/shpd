@@ -1,0 +1,43 @@
+# Entornos virtuales (se recrean con los comandos de READMEV2.md)
+tf25env/
+.venv/
+venv/
+env/
+pose_env/
+shpd/
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs de entrenamiento / TensorBoard (la propia notebook los borra al terminar)
+model/logs/
+logs/
+
+# Generados en tiempo de ejecucion por main.py / main_rpi.py
+landmark_log.txt
+
+# Generados por install_rpi.sh al correr en la Raspberry Pi
+config_pose_rpi.json
+test_installation.py
+
+# Artefactos de conversion intermedios (no el .tflite final, ese si se versiona)
+model/saved_model_dir/
+
+# Backups y temporales de editor
+*.save
+*.swp
+*.swm
+*.swn
+*.swo
+*~
+
+# Configuracion de editor / IDE / asistentes (preferencias locales, no del proyecto)
+.vscode/
+.claude/
+
+# Datos que no son del proyecto (por si se cuela algo similar de nuevo)
+test.json
