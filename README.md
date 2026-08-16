@@ -1,4 +1,4 @@
-# SHPD — Smart Healthy Posture Detector
+# SHPD — Posture Recognition ML Training 
 
 ![Python](https://img.shields.io/badge/Python-3.8%20%7C%203.12-3776AB?logo=python&logoColor=white)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.5-FF6F00?logo=tensorflow&logoColor=white)
