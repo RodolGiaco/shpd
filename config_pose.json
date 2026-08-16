@@ -16,8 +16,6 @@
             "safe_zone": true
         },
         "gui": {
-            "hand_window_width": 300,
-            "hand_window_height": 300,
             "show_battery": false
         },
         "buffer_length": 6,

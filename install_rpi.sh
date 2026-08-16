@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script de instalación automatizada para SmartHealthyPostureDetector en Raspberry Pi 3
+# Script de instalación automatizada para shpd-edge-vision en Raspberry Pi 3
 # Versión: 1.0
 # Compatibilidad: Raspberry Pi 3 Model B Plus Rev 1.3 (ARMv7 32-bit)
 
@@ -239,13 +239,13 @@ setup_project() {
     cd ~
     
     # Clonar repositorio (reemplazar con URL real)
-    if [ ! -d "SmartHealthyPostureDetector" ]; then
+    if [ ! -d "shpd-edge-vision" ]; then
         print_warning "Por favor, clona el repositorio manualmente:"
-        print_warning "git clone [URL_DEL_REPOSITORIO] SmartHealthyPostureDetector"
+        print_warning "git clone [URL_DEL_REPOSITORIO] shpd-edge-vision"
         return
     fi
     
-    cd SmartHealthyPostureDetector
+    cd shpd-edge-vision
     
     # Activar entorno virtual
     source ~/pose_env/bin/activate
@@ -271,10 +271,6 @@ create_rpi_config() {
       "min_pose_detection_confidence": 0.3,
       "min_pose_tracking_confidence": 0.3,
       "min_pose_presence_confidence": 0.3
-    },
-    "gui": {
-      "hand_window_height": 160,
-      "hand_window_width": 240
     },
     "buffer_length": 10,
     "speed": 40
@@ -350,7 +346,7 @@ setup_autostart() {
     # Crear script de inicio
     cat > ~/start_pose_detector.sh << 'EOF'
 #!/bin/bash
-cd ~/SmartHealthyPostureDetector
+cd ~/shpd-edge-vision
 source ~/pose_env/bin/activate
 export DISPLAY=:0
 python main.py
@@ -375,7 +371,7 @@ EOF
 # Menú principal
 main_menu() {
     echo "================================================"
-    echo "Instalador de SmartHealthyPostureDetector"
+    echo "Instalador de shpd-edge-vision"
     echo "Para Raspberry Pi 3 Model B Plus"
     echo "================================================"
     echo ""
@@ -462,8 +458,8 @@ prepare_system() {
 verify_installation() {
     print_msg "Verificando instalación..."
     
-    if [ -f ~/SmartHealthyPostureDetector/test_installation.py ]; then
-        cd ~/SmartHealthyPostureDetector
+    if [ -f ~/shpd-edge-vision/test_installation.py ]; then
+        cd ~/shpd-edge-vision
         source ~/pose_env/bin/activate
         python test_installation.py
     else

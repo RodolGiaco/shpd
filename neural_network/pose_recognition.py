@@ -1,10 +1,17 @@
 import csv
 import copy
 import itertools
-from tflite_runtime.interpreter import Interpreter
 import numpy as np
 import json
 from instructions import gesture_buffer
+
+# En la Raspberry Pi solo esta instalado tflite_runtime (liviano). En la PC
+# usamos TensorFlow completo, que ya trae el mismo Interpreter. Con este
+# try/except el mismo codigo corre en los dos sin tocar nada a mano.
+try:
+    from tflite_runtime.interpreter import Interpreter
+except ImportError:
+    from tensorflow.lite.python.interpreter import Interpreter
 
 class PoseRecognizer(object):
     def __init__(self, model_path='model/keypoint_classifier.tflite', label_path='model/keypoint_classifier_label.csv'):

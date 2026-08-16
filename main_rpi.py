@@ -12,7 +12,7 @@ from mp_utils import pose_posture
 from neural_network import pose_recognition
 from instructions import gesture_instructions
 from instructions import gesture_buffer
-from gui import ThirdPersonGUI
+from gui import PostureGUI
 
 # Configuración específica para Raspberry Pi
 os.environ['OPENCV_VIDEOIO_PRIORITY_MSMF'] = '0'
@@ -69,10 +69,6 @@ def load_rpi_config():
                 'min_pose_detection_confidence': 0.3,
                 'min_pose_tracking_confidence': 0.3,
                 'min_pose_presence_confidence': 0.3
-            },
-            'gui': {
-                'hand_window_height': 160,
-                'hand_window_width': 240
             },
             'buffer_length': 10,
             'speed': 40
@@ -152,10 +148,7 @@ def main():
     print("Inicializando componentes...")
     
     # GUI simplificada
-    tp_gui = ThirdPersonGUI(
-        config['constants']['gui']['hand_window_height'], 
-        config['constants']['gui']['hand_window_width']
-    )
+    posture_gui = PostureGUI()
     
     # Inicializar cámara
     cap = initialize_camera(config)
@@ -246,21 +239,15 @@ def main():
                       cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
             
             # Actualizar GUI
-            tp_gui.update_camera_window(main_window_image)
-            tp_gui.update_info_window(
-                instructions.get_follow_state(), 
-                0, 
-                100, 
-                gesture_name
-            )
-            tp_gui.show_window()
-            
-            # Posicionar ventanas
-            cv.moveWindow("ThirdPerson", 0, 0)
-            cv.moveWindow("Info", 640, 0)
+            posture_gui.update_camera_window(main_window_image)
+            posture_gui.draw_posture_label(gesture_name)
+            posture_gui.show_window()
+
+            # Posicionar ventana
+            cv.moveWindow("Postura", 0, 0)
             
             # Verificar tecla
-            key = tp_gui.getKey()
+            key = posture_gui.getKey()
             if key == ord('q'):
                 break
             elif key == ord('r'):  # Reset buffer
@@ -287,7 +274,7 @@ def main():
         print("Cerrando aplicación...")
         cap.release()
         pose_detection.close()
-        tp_gui.close()
+        posture_gui.close()
         print("Aplicación cerrada correctamente")
 
 if __name__ == "__main__":
