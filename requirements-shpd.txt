@@ -1,0 +1,13 @@
+# Entorno de recoleccion de datos (shpd) - Python 3.12
+# Unicamente lo que necesita model/add_pose.py (deteccion de pose via la
+# Tasks API de MediaPipe + captura de camara). No instala tflite_runtime:
+# ver la nota sobre main.py en READMEV2.md, seccion 3.1.
+#
+# Crear el entorno:
+#   python3 -m venv shpd
+#   source shpd/bin/activate
+#   pip install -r requirements-shpd.txt
+
+opencv-python==4.8.1.78
+mediapipe==0.10.13
+numpy==1.26.4
