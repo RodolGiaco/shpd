@@ -12,7 +12,7 @@ flowchart TD
     Main --> Rec["<b>neural_network</b><br/>PoseRecognizer, KeyPointClassifier<br/><i>clasificación TFLite</i>"]
     Main --> Gui["<b>gui</b><br/>PostureGUI<br/><i>ventana OpenCV</i>"]
 
-    Rec --> Instr["<b>instructions</b><br/>GestureBuffer, Instructions<br/><i>estabilización + notificaciones</i>"]
+    Rec --> Instr["<b>instructions</b><br/>GestureBuffer<br/><i>estabilización</i>"]
 
     classDef entry fill:#2F6690,stroke:#1c4a66,color:#ffffff,font-weight:bold
     classDef module fill:#E4EEF4,stroke:#2F6690,color:#1C2530
@@ -94,16 +94,6 @@ Guarda los últimos `buffer_len` IDs en una cola. Cuando la cola se llena, si el
 
 - `buffer_len` alto + `min_consistency` alto → más estable, más lento para reaccionar.
 - `buffer_len` bajo + `min_consistency` bajo → más responsivo, más parpadeo.
-
-### `instructions.gesture_instructions.Instructions`
-
-```python
-Instructions(following, speed=40, width=1000, height=500)
-```
-
-Guarda el estado de "following" (`get_follow_state()`) y expone `send_telegram_message(message)`, que postea a la API de Telegram con un bot token y chat ID.
-
-> ⚠️ **El token y el chat ID están hardcodeados en el archivo, no en `config_pose.json` ni en una variable de entorno.** Hay que rotarlos y moverlos a configuración antes de compartir este repositorio — ver el aviso al inicio de esta conversación.
 
 ## `config_pose.json`
 
